@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GDD: Shark Sultan - Idle Kitchen</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ocean-deep: #020b18;
+    --ocean-mid: #031a35;
+    --ocean-surface: #042d5a;
+    --teal-glow: #00c9c9;
+    --teal-light: #4de8e8;
+    --gold: #ffc947;
+    --gold-light: #ffe082;
+    --coral: #ff6b6b;
+    --coral-light: #ff9a9a;
+    --pearl: #e8f4f8;
+    --bubble: rgba(0,201,201,0.08);
+    --card-bg: rgba(3,26,53,0.85);
+    --border-glow: rgba(0,201,201,0.3);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Cairo', sans-serif; background: var(--ocean-deep); color: var(--pearl); overflow-x: hidden; line-height: 1.8; }
+  .ocean-bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+  .ocean-bg::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 20% 20%, rgba(0,80,120,0.4) 0%, transparent 60%), radial-gradient(ellipse at 80% 80%, rgba(0,50,100,0.5) 0%, transparent 50%); }
+  .bubbles { position: absolute; inset: 0; }
+  .bubble { position: absolute; border-radius: 50%; background: rgba(0,201,201,0.06); border: 1px solid rgba(0,201,201,0.12); animation: rise linear infinite; }
+  @keyframes rise { 0% { transform: translateY(110vh) scale(0.5); opacity:0; } 10% { opacity: 1; } 90% { opacity: 0.6; } 100% { transform: translateY(-10vh) scale(1.2); opacity:0; } }
+  .ray { position: absolute; top: -50%; width: 2px; height: 200%; background: linear-gradient(to bottom, transparent, rgba(0,201,201,0.04), transparent); animation: sway ease-in-out infinite; transform-origin: top center; }
+  @keyframes sway { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg) translateX(20px); } }
+  .wrapper { position: relative; z-index: 1; }
+  .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 4rem 2rem; position: relative; }
+  .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,201,201,0.1); border: 1px solid var(--border-glow); border-radius: 50px; padding: 6px 20px; font-size: 0.8rem; color: var(--teal-light); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2rem; animation: fadeInDown 0.8s ease both; }
+  .hero-title { font-family: 'Tajawal', sans-serif; font-size: clamp(3rem, 10vw, 7rem); font-weight: 900; line-height: 1.1; margin-bottom: 0.3em; animation: fadeInDown 0.9s ease 0.1s both; }
+  .hero-title .shark { color: var(--teal-glow); text-shadow: 0 0 40px rgba(0,201,201,0.5); }
+  .hero-title .sultan { color: var(--gold); text-shadow: 0 0 40px rgba(255,201,71,0.4); }
+  .hero-subtitle { font-size: clamp(1.2rem, 3vw, 1.8rem); color: rgba(232,244,248,0.7); margin-bottom: 3rem; animation: fadeInDown 1s ease 0.2s both; }
+  .hero-meta { display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center; animation: fadeInUp 1s ease 0.4s both; }
+  .meta-tag { background: var(--bubble); border: 1px solid var(--border-glow); border-radius: 8px; padding: 8px 18px; font-size: 0.85rem; color: var(--teal-light); }
+  .meta-tag span { color: rgba(232,244,248,0.5); margin-left: 6px; font-size: 0.75rem; }
+  .scroll-hint { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; opacity: 0.5; animation: bounce 2s ease infinite; }
+  .scroll-hint div { width: 1px; height: 50px; background: linear-gradient(to bottom, var(--teal-glow), transparent); }
+  .scroll-hint p { font-size: 0.7rem; letter-spacing: 3px; color: var(--teal-light); }
+  @keyframes bounce { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(8px); } }
+  .nav { position: sticky; top: 0; z-index: 100; background: rgba(2,11,24,0.9); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-glow); padding: 0 2rem; overflow-x: auto; }
+  .nav-inner { max-width: 1200px; margin: 0 auto; display: flex; gap: 0; align-items: center; }
+  .nav a { display: block; padding: 1rem 1.1rem; color: rgba(232,244,248,0.6); text-decoration: none; font-size: 0.82rem; white-space: nowrap; border-bottom: 2px solid transparent; transition: all 0.2s; font-weight: 500; }
+  .nav a:hover { color: var(--teal-light); border-bottom-color: var(--teal-glow); }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+  section { padding: 5rem 0; border-bottom: 1px solid rgba(0,201,201,0.07); }
+  .section-label { font-size: 0.75rem; letter-spacing: 4px; text-transform: uppercase; color: var(--teal-glow); margin-bottom: 0.8rem; display: flex; align-items: center; gap: 12px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to left, transparent, var(--border-glow)); max-width: 200px; }
+  .section-title { font-family: 'Tajawal', sans-serif; font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; margin-bottom: 1rem; color: #fff; }
+  .section-title em { color: var(--gold); font-style: normal; }
+  .section-title .teal { color: var(--teal-glow); }
+  .section-intro { font-size: 1.05rem; color: rgba(232,244,248,0.65); max-width: 700px; margin-bottom: 3rem; line-height: 2; }
+  .card { background: var(--card-bg); border: 1px solid var(--border-glow); border-radius: 16px; padding: 2rem; position: relative; overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; }
+  .card::before { content: ''; position: absolute; top: 0; right: 0; width: 150px; height: 150px; background: radial-gradient(circle at top right, rgba(0,201,201,0.08), transparent 70%); pointer-events: none; }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 30px rgba(0,201,201,0.08); }
+  .card-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+  .card-title { font-family: 'Tajawal', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--gold); margin-bottom: 0.8rem; }
+  .card p, .card li { font-size: 0.92rem; color: rgba(232,244,248,0.75); line-height: 1.9; }
+  .card ul { list-style: none; padding: 0; }
+  .card li { padding: 4px 0; padding-right: 1.4em; position: relative; }
+  .card li::before { content: '▸'; position: absolute; right: 0; color: var(--teal-glow); font-size: 0.7rem; top: 9px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; }
+  .loop-step { display: flex; gap: 2rem; align-items: flex-start; margin-bottom: 1.5rem; padding: 1.8rem; background: var(--card-bg); border: 1px solid var(--border-glow); border-right: 4px solid var(--teal-glow); border-radius: 12px; transition: all 0.3s; }
+  .loop-step:hover { border-right-color: var(--gold); transform: translateX(-4px); }
+  .step-num { font-family: 'Tajawal', sans-serif; font-size: 3rem; font-weight: 900; color: rgba(0,201,201,0.15); line-height: 1; min-width: 60px; text-align: center; }
+  .step-content h3 { font-family: 'Tajawal', sans-serif; font-size: 1.15rem; font-weight: 700; color: var(--teal-light); margin-bottom: 0.5rem; }
+  .step-content p { font-size: 0.9rem; color: rgba(232,244,248,0.7); line-height: 1.9; }
+  .char-card { background: var(--card-bg); border: 1px solid var(--border-glow); border-radius: 16px; padding: 2rem 1.5rem; text-align: center; transition: all 0.3s; position: relative; overflow: hidden; }
+  .char-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(to right, transparent, var(--teal-glow), transparent); transform: scaleX(0); transition: transform 0.3s; }
+  .char-card:hover::after { transform: scaleX(1); }
+  .char-card:hover { transform: translateY(-6px); box-shadow: 0 15px 40px rgba(0,0,0,0.4); }
+  .char-emoji { font-size: 3.5rem; display: block; margin-bottom: 0.8rem; }
+  .char-name { font-family: 'Tajawal', sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--gold); margin-bottom: 0.4rem; }
+  .char-role { font-size: 0.78rem; letter-spacing: 2px; text-transform: uppercase; color: var(--teal-glow); margin-bottom: 1rem; }
+  .char-desc { font-size: 0.88rem; color: rgba(232,244,248,0.65); line-height: 1.8; }
+  .world-card { background: var(--card-bg); border: 1px solid var(--border-glow); border-radius: 20px; padding: 0; overflow: hidden; transition: all 0.3s; }
+  .world-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+  .world-header { padding: 2.5rem 2rem; position: relative; overflow: hidden; }
+  .world-header.ocean { background: linear-gradient(135deg, #012a4a, #014f86); }
+  .world-header.sky { background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d); }
+  .world-header.desert { background: linear-gradient(135deg, #5f3007, #c77c1a, #f5c518); }
+  .world-emoji { font-size: 3rem; display: block; margin-bottom: 0.5rem; }
+  .world-tag { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; opacity: 0.7; }
+  .world-name { font-family: 'Tajawal', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; margin-top: 0.3rem; }
+  .world-body { padding: 1.5rem 2rem; }
+  .world-body p { font-size: 0.9rem; color: rgba(232,244,248,0.65); line-height: 1.9; }
+  .world-recipes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 1rem; }
+  .recipe-tag { background: rgba(0,201,201,0.1); border: 1px solid rgba(0,201,201,0.2); border-radius: 20px; padding: 3px 12px; font-size: 0.75rem; color: var(--teal-light); }
+  .merge-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-width: 280px; margin: 1.5rem auto; }
+  .merge-cell { aspect-ratio: 1; background: rgba(0,201,201,0.06); border: 1px dashed rgba(0,201,201,0.25); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; transition: all 0.3s; }
+  .merge-cell:hover { background: rgba(0,201,201,0.12); border-color: var(--teal-glow); transform: scale(1.05); }
+  .merge-cell.filled { background: rgba(0,201,201,0.12); border-color: rgba(0,201,201,0.4); border-style: solid; }
+  .merge-cell.result { background: rgba(255,201,71,0.12); border-color: var(--gold); animation: glow-pulse 2s ease infinite; }
+  @keyframes glow-pulse { 0%,100% { box-shadow: 0 0 10px rgba(255,201,71,0.2); } 50% { box-shadow: 0 0 25px rgba(255,201,71,0.5); } }
+  .mono-card { background: var(--card-bg); border: 1px solid var(--border-glow); border-radius: 16px; padding: 2rem; text-align: center; transition: all 0.3s; }
+  .mono-card:hover { transform: translateY(-4px); }
+  .mono-icon { font-size: 2.8rem; margin-bottom: 1rem; display: block; }
+  .mono-title { font-family: 'Tajawal', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(--gold); margin-bottom: 0.5rem; }
+  .mono-desc { font-size: 0.88rem; color: rgba(232,244,248,0.65); line-height: 1.8; }
+  .prestige-visual { display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap; margin: 2rem 0; }
+  .prestige-world { background: var(--card-bg); border: 1px solid var(--border-glow); border-radius: 12px; padding: 1.2rem 1.8rem; text-align: center; font-size: 0.9rem; }
+  .prestige-arrow { color: var(--teal-glow); font-size: 1.5rem; }
+  .styled-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
+  .styled-table th { background: rgba(0,201,201,0.1); border: 1px solid var(--border-glow); padding: 12px 16px; text-align: right; color: var(--teal-light); font-weight: 600; }
+  .styled-table td { border: 1px solid rgba(0,201,201,0.1); padding: 12px 16px; color: rgba(232,244,248,0.75); vertical-align: top; }
+  .styled-table tr:hover td { background: rgba(0,201,201,0.04); }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+  .badge-teal { background: rgba(0,201,201,0.15); color: var(--teal-light); border: 1px solid rgba(0,201,201,0.3); }
+  .badge-gold { background: rgba(255,201,71,0.15); color: var(--gold-light); border: 1px solid rgba(255,201,71,0.3); }
+  .badge-coral { background: rgba(255,107,107,0.15); color: var(--coral-light); border: 1px solid rgba(255,107,107,0.3); }
+  .highlight-box { background: rgba(0,201,201,0.06); border: 1px solid rgba(0,201,201,0.2); border-radius: 12px; padding: 1.5rem 2rem; margin: 1.5rem 0; }
+  .highlight-box h4 { font-family: 'Tajawal', sans-serif; font-size: 1rem; font-weight: 700; color: var(--teal-light); margin-bottom: 0.8rem; }
+  .highlight-box p, .highlight-box li { font-size: 0.9rem; color: rgba(232,244,248,0.7); line-height: 1.9; }
+  .highlight-box ul { list-style: none; padding: 0; }
+  .highlight-box li { padding: 3px 0; padding-right: 1.2em; position: relative; }
+  .highlight-box li::before { content: '◆'; position: absolute; right: 0; color: var(--teal-glow); font-size: 0.5rem; top: 10px; }
+  footer { text-align: center; padding: 4rem 2rem; color: rgba(232,244,248,0.3); font-size: 0.85rem; border-top: 1px solid rgba(0,201,201,0.08); }
+  footer strong { color: var(--teal-glow); }
+  @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .version-banner { background: linear-gradient(135deg, rgba(0,201,201,0.1), rgba(255,201,71,0.08)); border: 1px solid rgba(0,201,201,0.2); border-radius: 12px; padding: 1.2rem 2rem; display: flex; gap: 2rem; flex-wrap: wrap; align-items: center; margin-bottom: 3rem; }
+  .version-item { display: flex; flex-direction: column; }
+  .version-label { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(232,244,248,0.4); }
+  .version-value { font-size: 0.95rem; font-weight: 600; color: var(--pearl); }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--ocean-deep); }
+  ::-webkit-scrollbar-thumb { background: var(--ocean-surface); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--teal-glow); }
+</style>
+</head>
+<body>
+
+<div class="ocean-bg">
+  <div class="bubbles" id="bubbles"></div>
+  <div class="ray" style="right:15%;animation-duration:8s;opacity:0.6;"></div>
+  <div class="ray" style="right:35%;animation-duration:12s;animation-delay:-4s;"></div>
+  <div class="ray" style="right:75%;animation-duration:14s;animation-delay:-7s;opacity:0.5;"></div>
+</div>
+
+<div class="wrapper">
+
+  <div class="hero">
+    <div class="hero-badge">وثيقة تصميم اللعبة · الإصدار 1.0</div>
+    <h1 class="hero-title"><span class="shark">القرش</span> <span class="sultan">سلطان</span></h1>
+    <p class="hero-subtitle">مطبخ الآيدل 🍣</p>
+    <div class="hero-meta">
+      <div class="meta-tag">📱 Android & iOS <span>المنصة</span></div>
+      <div class="meta-tag">⚙️ Unity 6 (URP) <span>المحرك</span></div>
+      <div class="meta-tag">👧 +9 <span>الفئة العمرية</span></div>
+      <div class="meta-tag">🎮 Idle / Merge <span>النوع</span></div>
+    </div>
+    <div class="scroll-hint"><p>اكتشف المزيد</p><div></div></div>
+  </div>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="#overview">المفهوم العام</a>
+      <a href="#loop">دورة اللعب</a>
+      <a href="#mechanics">الميكانيكيات</a>
+      <a href="#characters">الشخصيات</a>
+      <a href="#worlds">العوالم</a>
+      <a href="#economy">الاقتصاد</a>
+      <a href="#monetization">الربح</a>
+      <a href="#rewarded-ads">الإعلانات</a>
+      <a href="#ux">تجربة المستخدم</a>
+    </div>
+  </nav>
+
+  <!-- 01 OVERVIEW -->
+  <section id="overview">
+    <div class="container">
+      <div class="section-label">01 · نظرة عامة و مفهوم الشخصية المحدّث</div>
+      <h2 class="section-title">مفهوم <em>اللعبة</em></h2>
+      <p class="section-intro">"القرش سلطان: مطبخ الآيدل" لعبة إدارة مطعم بحري تعمل تلقائياً على الموبايل. تجمع بين ميكانيكية الدمج (Merge) والنمو التدريجي (Idle Progression)، حيث يطوّر اللاعب مطعم سلطان من شاحنة طعام بسيطة إلى إمبراطورية بحرية متكاملة. تم تعديل الخصم الرئيسي ليكون مزيجاً هجيناً يجمع بين صفات الأخطبوط والحبار، مما يعزز من طابعه "المشاكس" وقدرته على الحركة السريعة داخل المطبخ.</p>
+
+      <div class="version-banner">
+        <div class="version-item"><span class="version-label">الإصدار</span><span class="version-value">1.0 — Idle Edition</span></div>
+        <div class="version-item"><span class="version-label">النوع</span><span class="version-value">Idle / Merge / Casual</span></div>
+        <div class="version-item"><span class="version-label">الجمهور</span><span class="version-value">أطفال وعائلات +9</span></div>
+        <div class="version-item"><span class="version-label">اللغات</span><span class="version-value">العربية (أساسي) + الإنجليزية</span></div>
+        <div class="version-item"><span class="version-label">المحرك</span><span class="version-value">Unity 6 URP</span></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <span class="card-icon">🎯</span>
+          <div class="card-title">الهدف الرئيسي</div>
+          <p>بناء وتطوير مطعم بحري ناجح، وتحويله من شاحنة طعام بسيطة إلى مطعم بحري متكامل بطابع عربي أصيل من خلال اكتشاف وصفات جديدة ودمج المكونات النادرة.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">💡</span>
+          <div class="card-title">الحلقة الإبداعية</div>
+          <p>يجمع اللاعب بين اللعب النشط (دمج المكونات، طرد فلفل) واللعب السلبي (جمع الأرباح أثناء الغياب) في توازن يجعل كل دقيقة ممتعة ومجدية.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 LOOP -->
+  <section id="loop">
+    <div class="container">
+      <div class="section-label">02 · دورة اللعب</div>
+      <h2 class="section-title">الحلقة <em>الأساسية</em></h2>
+      <p class="section-intro">كل جلسة تدور حول دورة متكاملة وممتعة تحافظ على تفاعل اللاعب وتمنحه إحساساً مستمراً بالتقدم.</p>
+
+      <div class="loop-step"><div class="step-num">01</div><div class="step-content"><h3>🍳 الطبخ والإنتاج</h3><p>يبدأ سلطان بطبخ الوصفات المتاحة في شاحنة طعامه وبيعها للزبائن. الوصفات البسيطة تُطبخ بسرعة بسعر منخفض، بينما الوصفات النادرة تأخذ وقتاً أطول مقابل ربح أعلى.</p></div></div>
+      <div class="loop-step"><div class="step-num">02</div><div class="step-content"><h3>💰 جمع الأرباح</h3><p>تتراكم العملات تلقائياً عند مرور اللاعب بالشاشة. أرباح الغياب (Offline Earnings) تتراكم وتُضاعَف بمشاهدة إعلان مكافأة اختياري.</p></div></div>
+      <div class="loop-step"><div class="step-num">03</div><div class="step-content"><h3>🧪 مختبر الدمج</h3><p>ينفق اللاعب العملات لشراء صناديق مكونات خام توضع على لوحة 4×4. يدمج المكونات المتشابهة بالسحب لاكتشاف مكونات أرقى وصولاً لـ "وصفة سرية" جديدة.</p></div></div>
+      <div class="loop-step"><div class="step-num">04</div><div class="step-content"><h3>📋 إضافة الوصفة للقائمة</h3><p>الوصفة المكتشفة تُضاف فوراً لقائمة طعام سلطان وتُباع تلقائياً. الوصفات النادرة (ذهبية) تجلب ضعف الربح وتجذب زبائن VIP مميزين.</p></div></div>
+      <div class="loop-step"><div class="step-num">05</div><div class="step-content"><h3>🤝 تطوير الأصدقاء والمطعم</h3><p>فتح وتطوير الأصدقاء (سنبل، نشيطة، رشيقة، بلبلة) لأتمتة المهام المختلفة. توسيع المطعم بإضافة منطقة طاولات، كاشير إضافي، درايف ثرو، وخدمة توصيل.</p></div></div>
+      <div class="loop-step"><div class="step-num">06</div><div class="step-content"><h3>🌊 التوسع لعالم جديد</h3><p>بعد اكتشاف كل وصفات العالم الحالي وتحقيق هدف مالي، تُفتح بوابة "البريستيج" للانتقال إلى عالم جديد مع الحفاظ على الأوسمة الدائمة.</p></div></div>
+    </div>
+  </section>
+
+  <!-- 03 MECHANICS -->
+  <section id="mechanics">
+    <div class="container">
+      <div class="section-label">03 · الميكانيكيات</div>
+      <h2 class="section-title">نظام <em>اللعب</em> <span class="teal">التفصيلي</span></h2>
+      <p class="section-intro">ثلاثة أنظمة أساسية تعمل معاً لتقديم تجربة إيدل غنية ومرضية.</p>
+
+      <div class="card" style="margin-bottom:1.5rem;">
+        <span class="card-icon">🔬</span>
+        <div class="card-title">أ. مختبر الدمج (Merge Lab)</div>
+        <div style="display:flex; gap:2rem; flex-wrap:wrap; align-items:flex-start;">
+          <div style="flex:1; min-width:220px;">
+            <ul>
+              <li><strong>اللوحة:</strong> شبكة 4×4 = 16 خلية لحمل المكونات</li>
+              <li><strong>الشراء:</strong> صناديق مكونات بسعر عملات متصاعد</li>
+              <li><strong>الدمج:</strong> سحب مكوّن فوق مثيله → مستوى أعلى</li>
+              <li><strong>السلاسل:</strong> 5 مستويات (عادي ← برونزي ← فضي ← ذهبي ← أسطوري)</li>
+              <li><strong>الاكتشاف:</strong> المستوى الأسطوري يكشف "وصفة سرية" جديدة</li>
+              <li><strong>وصفات نادرة:</strong> 10% احتمال أن تكون ذهبية (ضعف الربح)</li>
+              <li><strong>دمج آلي:</strong> زر مقابل جواهر يُرتّب اللوحة تلقائياً</li>
+            </ul>
+          </div>
+          <div style="flex:0 0 auto;">
+            <p style="text-align:center; font-size:0.78rem; color:rgba(232,244,248,0.5); margin-bottom:6px;">مثال على لوحة الدمج</p>
+            <div class="merge-grid">
+              <div class="merge-cell filled">🐟</div><div class="merge-cell filled">🐟</div><div class="merge-cell filled">🦐</div><div class="merge-cell"></div>
+              <div class="merge-cell filled">🐠</div><div class="merge-cell filled">🐠</div><div class="merge-cell filled">🦑</div><div class="merge-cell"></div>
+              <div class="merge-cell filled">🦀</div><div class="merge-cell"></div><div class="merge-cell result">⭐</div><div class="merge-cell"></div>
+              <div class="merge-cell"></div><div class="merge-cell"></div><div class="merge-cell"></div><div class="merge-cell"></div>
+            </div>
+            <p style="text-align:center;margin-top:6px;font-size:0.78rem;color:var(--gold);">✨ اكتشفت: سوشي سلطان!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:1.5rem;">
+        <span class="card-icon">🏪</span>
+        <div class="card-title">ب. نظام التوسع والمطعم</div>
+        <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(232,244,248,0.75);">يبدأ اللاعب بشاحنة طعام بسيطة ويوسّع مطعمه تدريجياً:</p>
+        <table class="styled-table">
+          <thead><tr><th>المنطقة</th><th>الفائدة</th><th>متطلبات الفتح</th></tr></thead>
+          <tbody>
+            <tr><td>🚚 شاحنة الطعام</td><td>دخل أساسي، تحكم يدوي</td><td>متاح من البداية</td></tr>
+            <tr><td>🪑 منطقة الطاولات</td><td>+40% متوسط قيمة الطلب</td><td>500 عملة ذهبية</td></tr>
+            <tr><td>💳 كاشير إضافي</td><td>+25% معدل الخدمة</td><td>رشيقة متاحة + 800 ذهبية</td></tr>
+            <tr><td>🚗 درايف ثرو</td><td>+60% عدد الزبائن/ساعة</td><td>بلبلة متاحة + 1500 ذهبية</td></tr>
+            <tr><td>🛵 خدمة التوصيل</td><td>دخل إضافي أثناء الغياب</td><td>سنبل متاح + 1200 ذهبية</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <span class="card-icon">🐙🦑</span>
+        <div class="card-title">ج. نظام "فلفل" — الحدث الديناميكي</div>
+        <div class="grid-2" style="margin-top:1rem;">
+          <div>
+            <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(232,244,248,0.75);">فلفل هو الشرير المرح في عالم سلطان! يظهر عشوائياً ليخلق مشاكل مضحكة ويُجبر اللاعب على التفاعل الفوري.</p>
+            <ul style="list-style:none;padding:0;">
+              <li style="padding:6px 0;color:rgba(232,244,248,0.75);">🔥 تعطيل موقد (يوقف إنتاج وصفة)</li>
+              <li style="padding:6px 0;color:rgba(232,244,248,0.75);">📦 سرقة مكوّن من لوحة الدمج</li>
+              <li style="padding:6px 0;color:rgba(232,244,248,0.75);">😤 إزعاج الزبائن (يُقلل الرضا مؤقتاً)</li>
+              <li style="padding:6px 0;color:rgba(232,244,248,0.75);">🌊 إفساد وصفة جاهزة للبيع</li>
+            </ul>
+            <p style="font-size:0.83rem;color:rgba(232,244,248,0.45);margin-top:0.8rem;">⏱️ يجب الضغط على فلفل خلال 5 ثوانٍ وإلا سيفر.</p>
+          </div>
+          <div class="highlight-box">
+            <h4>🏆 مكافأة الفوز على فلفل</h4>
+            <ul>
+              <li>💎 جواهر (1-5) بحسب سرعة الاستجابة</li>
+              <li>⚡ مضاعفة الإنتاج لـ 60 ثانية</li>
+              <li>📦 صندوق مكوّن مجاني (أحياناً)</li>
+              <li>🌟 نقاط بطولة لجوائز أسبوعية</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 CHARACTERS -->
+  <section id="characters">
+    <div class="container">
+      <div class="section-label">04 · الشخصيات</div>
+      <h2 class="section-title">فريق <em>سلطان</em></h2>
+      <p class="section-intro">كل شخصية تؤدي دوراً محدداً في أتمتة المطعم. يمكن فتحها وترقيتها لزيادة كفاءتها.</p>
+
+      <div class="grid-3" style="margin-bottom:2rem;">
+        <div class="char-card"><span class="char-emoji">🦈</span><div class="char-name">سلطان</div><div class="char-role">الشيف والمالك</div><p class="char-desc">القرش الطموح. يطبخ بنفسه في البداية ويدير المطعم. مهاراته تتطور مع كل وصفة جديدة يكتشفها.</p></div>
+        <div class="char-card"><span class="char-emoji">🦀</span><div class="char-name">سنبل</div><div class="char-role">مدير التوصيل</div><p class="char-desc">الدلفين السريع. يتولى توصيل الطلبات للمنازل ويزيد سرعة نقل الأطباق. يعمل حتى أثناء غيابك.</p></div>
+        <div class="char-card"><span class="char-emoji">🐢</span><div class="char-name">نشيطة</div><div class="char-role">المحاسبة الذكية</div><p class="char-desc">السلحفاة متعدد المهام. تُضاعف الأرباح المتراكمة أثناء الغياب بنسبة تصل إلى 3x.</p></div>
+        <div class="char-card"><span class="char-emoji">🐡</span><div class="char-name">رشيقة</div><div class="char-role">النادلة المميزة</div><p class="char-desc">سمكة النفخة المبتسمة. تخدم الطاولات باحترافية، تزيد رضا الزبائن وتجلب إكراميات إضافية.</p></div>
+        <div class="char-card"><span class="char-emoji">🐛</span><div class="char-name">بلبلة</div><div class="char-role">موظفة الدرايف ثرو</div><p class="char-desc">السمكة الملونة المرحة. تدير منطقة الدرايف ثرو وتضاعف عدد السيارات التي تُخدَّم في الساعة.</p></div>
+        <div class="char-card" style="border-color: rgba(255,107,107,0.3);"><span class="char-emoji">🐙🦑</span><div class="char-name">فلفل</div><div class="char-role">المشاغب الصغير</div><p class="char-desc">يظهر فجأة ليفسد المرح! لكن إذا تمكنت منه سريعاً ستحصل على جواهر نادرة ومكافآت مفاجئة.</p></div>
+      </div>
+
+      <div class="highlight-box">
+        <h4>🌟 نظام ترقية الشخصيات</h4>
+        <p>كل شخصية لها 5 مستويات. كل مستوى يزيد كفاءتها بـ 20% ويغيّر مظهرها ويضيف قدرة خاصة. الترقية بالجواهر أو بتحقيق هدف معين (مثلاً: "خدّم 1000 زبون").</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 WORLDS -->
+  <section id="worlds">
+    <div class="container">
+      <div class="section-label">05 · العوالم والتوسع</div>
+      <h2 class="section-title">استكشف <em>العوالم</em> الثلاثة</h2>
+      <p class="section-intro">بعد اكتشاف كل وصفات عالم، تُفتح بوابة للعالم التالي مع نظام بريستيج يحافظ على إنجازاتك.</p>
+
+      <div class="grid-3" style="margin-bottom:2.5rem;">
+        <div class="world-card"><div class="world-header ocean"><span class="world-emoji">🌊</span><div class="world-tag">العالم الأول · أساسي</div><div class="world-name">أعماق البحار</div></div><div class="world-body"><p>عالم سلطان الأصلي. مطعم بحري يقدم أشهى الأسماك والمأكولات البحرية والسوشي. المكونات: أسماك، روبيان، أخطبوط، أعشاب بحرية.</p><div class="world-recipes"><span class="recipe-tag">🍣 سوشي سلطان</span><span class="recipe-tag">🦞 شواء الجمبري</span><span class="recipe-tag">🐙 صيادية الأخطبوط</span><span class="recipe-tag">✨ سوشي الذهب (نادر)</span></div></div></div>
+        <div class="world-card"><div class="world-header sky"><span class="world-emoji">❄️</span><div class="world-tag">العالم الثاني · Expansion 1</div><div class="world-name">القارة المتجمدة</div></div><div class="world-body"><p>مطبخ تحت الجليد مع وصفات باردة وميكانيكية "إذابة الجليد" عن المكونات. عالم بصري غني بالتفاصيل والميكانيكيات البيئية الفريدة.</p><div class="world-recipes"><span class="recipe-tag">🧊 سلطة الجليد المتبلة</span><span class="recipe-tag">❄️ حساء الثلج الدافئ</span><span class="recipe-tag">🍦 آيس كريم البحر المتجمد</span><span class="recipe-tag">✨ حلوى الجليد الملكية (نادر)</span></div></div></div>
+        <div class="world-card"><div class="world-header desert"><span class="world-emoji">�️</span><div class="world-tag">العالم الثالث · Expansion 2</div><div class="world-name">مدينة أتلانتس</div></div><div class="world-body"><p>مطبخ تقني متطور في عمق البحار الأسطورية. وصفات ملكية وزبائن VIP أسطوريين. تصميم جميل بتكنولوجيا حديثة مزيج من القديم والحديث.</p><div class="world-recipes"><span class="recipe-tag">👑 طعام الملوك الأسطوري</span><span class="recipe-tag">🔱 وصفة بوسيدون</span><span class="recipe-tag">💎 الكنز الغارق</span><span class="recipe-tag">✨ وليمة أتلانتس الملكية (نادر)</span></div></div></div>
+      </div>
+
+      <div class="card">
+        <span class="card-icon">🏆</span>
+        <div class="card-title">نظام البريستيج (Prestige)</div>
+        <p style="margin-bottom:1.5rem;font-size:0.92rem;color:rgba(232,244,248,0.75);">عند إنهاء عالم كامل، يختار اللاعب "الانتقال" للعالم الجديد مع البريستيج:</p>
+        <div class="prestige-visual">
+          <div class="prestige-world"><div style="font-size:1.5rem;">🌊</div><div style="font-size:0.8rem;margin-top:4px;">أعماق البحار</div><div style="font-size:0.7rem;color:var(--teal-glow);margin-top:2px;">مكتمل ✓</div></div>
+          <div class="prestige-arrow">→</div>
+          <div style="background:rgba(255,201,71,0.1);border:2px dashed var(--gold);border-radius:12px;padding:1rem 1.5rem;text-align:center;"><div style="font-size:1.5rem;">🌟</div><div style="font-size:0.85rem;color:var(--gold);font-weight:600;margin-top:4px;">بريستيج!</div><div style="font-size:0.75rem;color:rgba(232,244,248,0.5);margin-top:2px;">+ وسام دائم</div></div>
+          <div class="prestige-arrow">→</div>
+          <div class="prestige-world"><div style="font-size:1.5rem;">☁️</div><div style="font-size:0.8rem;margin-top:4px;">فوق السحاب</div><div style="font-size:0.7rem;color:rgba(232,244,248,0.4);margin-top:2px;">يبدأ من الصفر</div></div>
+        </div>
+        <div class="grid-2" style="margin-top:1.5rem;">
+          <div class="highlight-box"><h4>🎖️ الأوسمة الدائمة</h4><ul><li>+15% ربح دائم في كل العوالم</li><li>شخصية مساعد إضافي مجاني</li><li>سرعة دمج أسرع بـ 10%</li><li>إطار خاص حول اسم اللاعب</li></ul></div>
+          <div class="highlight-box"><h4>📌 ما يُحتفظ به بعد البريستيج</h4><ul><li>الجواهر المتراكمة كاملة</li><li>الأوسمة السابقة</li><li>الوصفات المكتشفة (للمطالعة)</li><li>مستويات الشخصيات المرتقاة</li></ul></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 ECONOMY -->
+  <section id="economy">
+    <div class="container">
+      <div class="section-label">06 · الاقتصاد</div>
+      <h2 class="section-title">نظام <em>العملات</em> والموارد</h2>
+      <p class="section-intro">نظام اقتصادي ثنائي متوازن يضمن تجربة ممتعة للاعبين المجانيين ومجزية للدافعين.</p>
+
+      <div class="grid-2" style="margin-bottom:1.5rem;">
+        <div class="card"><span class="card-icon">💰</span><div class="card-title">العملات الذهبية (Coins)</div><ul><li>العملة الأساسية، تُكسب من بيع الطعام</li><li>تُنفق على صناديق مكونات الدمج</li><li>تُنفق على توسعات المطعم</li><li>يمكن مضاعفتها بإعلانات مكافأة</li><li>تتراكم أثناء الغياب (Offline Earnings)</li></ul></div>
+        <div class="card"><span class="card-icon">💎</span><div class="card-title">الجواهر (Gems)</div><ul><li>العملة المميزة، أصعب في الكسب</li><li>تُكسب من: فلفل، المهام اليومية، البريستيج، الإنجازات</li><li>تُنفق على: تسريع الدمج، فتح شخصيات، صناديق مميزة</li><li>قابلة للشراء بالمال الحقيقي عبر IAP</li></ul></div>
+      </div>
+
+      <table class="styled-table">
+        <thead><tr><th>المورد</th><th>مصادر الكسب</th><th>طرق الإنفاق</th><th>النوع</th></tr></thead>
+        <tbody>
+          <tr><td>🪙 عملات ذهبية</td><td>بيع الطعام، أرباح الغياب، مكافآت</td><td>صناديق الدمج، توسعات المطعم</td><td><span class="badge badge-teal">مجاني أساسي</span></td></tr>
+          <tr><td>💎 جواهر</td><td>فلفل، مهام يومية، بريستيج</td><td>تسريع الدمج، فتح شخصيات، صناديق مميزة</td><td><span class="badge badge-gold">مميز / دفع</span></td></tr>
+          <tr><td>⭐ نجوم الإنجاز</td><td>تحديات يومية، إنجازات طويلة الأمد</td><td>إطارات مظهر، ديكورات مطعم حصرية</td><td><span class="badge badge-teal">تجميعي</span></td></tr>
+          <tr><td>🎖️ أوسمة بريستيج</td><td>إكمال عالم كامل والبريستيج</td><td>مضاعفات دائمة، قدرات خاصة</td><td><span class="badge badge-coral">دائم</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 07 MONETIZATION -->
+  <section id="monetization">
+    <div class="container">
+      <div class="section-label">07 · نموذج الربح</div>
+      <h2 class="section-title">استراتيجية <em>التحقق من الدخل</em></h2>
+      <p class="section-intro">نموذج F2P متوازن يُعطي اللاعبين المجانيين تجربة كاملة مع منح المدفوعين مزايا تسريع وتجميل لا تعيق التوازن.</p>
+
+      <div class="grid-2">
+        <div class="mono-card"><span class="mono-icon">📺</span><div class="mono-title">إعلانات المكافأة (Rewarded Ads)</div><p class="mono-desc">اختيارية بالكامل. تُضاعف الأرباح لـ 5 دقائق، تُضاعف أرباح الغياب (2x-3x)، تمنح صندوق مكوّن مجاني. لا إعلانات مقاطِعة إطلاقاً.</p></div>
+        <div class="mono-card"><span class="mono-icon">💎</span><div class="mono-title">حزم الجواهر (IAP)</div><p class="mono-desc">حزم صغيرة (2.99$) ومتوسطة (7.99$) وكبيرة (19.99$). بدون Pay-to-Win — كل ما تشتريه متاح مجاناً بوقت أطول.</p></div>
+        <div class="mono-card"><span class="mono-icon">👨‍🍳</span><div class="mono-title">طباخون خارقون (IAP Permanent)</div><p class="mono-desc">شخصيات مساعدة إضافية جمالية. تُغيّر مظهر المطعم وتضيف تعليقات صوتية مضحكة. لا تأثير على توازن اللعب.</p></div>
+        <div class="mono-card"><span class="mono-icon">🎁</span><div class="mono-title">حزمة البداية المميزة</div><p class="mono-desc">عرض ترحيب بـ 1.99$ للاعبين الجدد: 200 جوهرة + صندوق مكونات ذهبي + تسريع مؤقت 24 ساعة. يظهر مرة واحدة فقط.</p></div>
+      </div>
+
+      <div class="highlight-box" style="margin-top:2rem;">
+        <h4>📌 مبادئ التصميم المالي</h4>
+        <ul>
+          <li>لا "energy systems" أو حواجز وقت تُوقف اللعب قسراً</li>
+          <li>اللاعب المجاني يصل لـ 80% من المحتوى بوقت أطول فقط</li>
+          <li>الإعلانات اختيارية دائماً ولا تُقاطع اللعب</li>
+          <li>لا وصفات حصرية للدافعين — التميز في السرعة والمظهر فقط</li>
+          <li>لا إعلانات لتطبيقات غير مناسبة للأطفال</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07A REWARDED ADS MECHANICS -->
+  <section id="rewarded-ads">
+    <div class="container">
+      <div class="section-label">07أ · ميكانيكيات الإعلانات المكافئة الذكية</div>
+      <h2 class="section-title">خطة <em>الإعلانات</em> الإبداعية</h2>
+      <p class="section-intro">ثلاث ميكانيكيات مبتكرة تجعل مشاهدة الإعلانات تجربة طبيعية وممتعة، حيث يشعر اللاعب أنه "يفتح" محتوى اكتشفه بالفعل بدلاً من شراء شيء جديد.</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <span class="card-icon">🏴‍☠️</span>
+          <div class="card-title">1. صيد الكنز المفقود (The Lost Treasure)</div>
+          <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(232,244,248,0.75);">بدلاً من نافذة منبثقة تقليدية، يظهر <strong>طائر بحري</strong> أو <strong>غواص صغير</strong> يحمل صندوقاً مغلقاً بسلاسل ذهبية.</p>
+          <ul>
+            <li><strong>التفاعل:</strong> عند الضغط على الصندوق، تظهر أيقونة "عين" 👁️ أو "فيديو" 🎬 بسيطة فوق القفل</li>
+            <li><strong>الشعور بالحاجة:</strong> اللاعب يرى الصندوق أمام عينه ويشعر بالفضول تجاه محتواه (مكونات ذهبية أو جواهر)</li>
+            <li><strong>المفتاح النفسي:</strong> المشاهدة ليست "ثمناً" بل هي "مفتاح" لفتح كنز وجده اللاعب بالفعل</li>
+            <li><strong>المكافأة:</strong> 1-3 مكونات ذهبية عشوائية أو 5-10 جواهر + رسالة نجاح مبهجة</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <span class="card-icon">💰</span>
+          <div class="card-title">2. تأمين فلفل (Filfil's Insurance)</div>
+          <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(232,244,248,0.75);">استغلال شرير "فلفل" بذكاء عاطفية لتحفيز الإعلانات.</p>
+          <ul>
+            <li><strong>السيناريو:</strong> بعد أن يقوم فلفل بتعطيل موقد أو سرقة مكون، تظهر شخصية "نشيطة" 🐢 أو "سنبل" 🦀</li>
+            <li><strong>العرض:</strong> "أنا أستطيع استرجاع ما فُقد فوراً... هل تريد مساعدتي؟" مع زر يظهر أيقونة فيديو</li>
+            <li><strong>الدافع النفسي:</strong> اللاعب يشعر بالحنق من فلفل. مشاهدة الإعلان ليست "شراء" بل هي "انتقام ذكي" أو "إصلاح سريع" للضرر</li>
+            <li><strong>المكافأة:</strong> استرجاع المكون المسروق فوراً + 60 ثانية حماية من فلفل + صوت تصفيق مرح</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:1.5rem;">
+        <span class="card-icon">⚡</span>
+        <div class="card-title">3. بوفيه الساعة السعيدة (Happy Hour Multiplier)</div>
+        <p style="margin-bottom:1rem;font-size:0.92rem;color:rgba(232,244,248,0.75);">استخدام ذكي للإعلانات في لحظات الذروة، بدلاً من لحظات الخمول.</p>
+        <div class="grid-2" style="margin-top:1rem;">
+          <div>
+            <ul>
+              <li><strong>الآلية:</strong> عندما يمتلئ المطعم بالزبائن (70%+ سعة)، تومض أيقونة "مضاعفة الأرباح" (2x ⚡) بجانب الكاشير</li>
+              <li><strong>الرسالة:</strong> "الآن ساعة سعيدة! هل تريد مضاعفة أرباحك من هؤلاء الزبائن الجائعين؟"</li>
+              <li><strong>FOMO عاطفي:</strong> بدلاً من عرض الإعلان عند الخمول (عندما لا يهتم اللاعب)، عرضه في الذروة يجعل اللاعب يشعر بـ "فوات الفرصة" إذا لم يشاهده</li>
+              <li><strong>المدة:</strong> 5 دقائق مضاعفة أرباح (2x) لكل زبون جديد</li>
+            </ul>
+          </div>
+          <div class="highlight-box">
+            <h4>🎯 نصائح التوظيف</h4>
+            <ul>
+              <li>فرك أيقونة 2x بحركة نبض مرئية</li>
+              <li>إضافة صوت جرس أو تنبيه خفيف</li>
+              <li>عرض عداد مريح: "ساعة سعيدة تنتهي في 4:32"</li>
+              <li>إذا لم يشاهد الإعلان، تذكير بعد 30 ثانية بصرياً</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="highlight-box" style="margin-top:2rem;">
+        <h4>🎬 إستراتيجية التكامل الإجمالية للإعلانات</h4>
+        <ul>
+          <li><strong>صيد الكنز:</strong> إعلان واحد كل 15-20 دقيقة لعب (حدث نادر لا يشعر به اللاعب كـ "إزعاج")</li>
+          <li><strong>تأمين فلفل:</strong> فقط عند ظهور فلفل (حدث ديناميكي، 2-3 مرات في الجلسة)</li>
+          <li><strong>ساعة سعيدة:</strong> فترات ذروة نشاط (أوقات ذروة للاعب، عادة مساءً)</li>
+          <li><strong>الحد الأقصى:</strong> 5-7 إعلانات مكافأة في الجلسة، بدون إزعاج إذا رفض اللاعب</li>
+          <li><strong>لا إجبار:</strong> جميع الإعلانات اختيارية بنسبة 100% - اللاعب يختار عندما يريد المكافأة</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 UX -->
+  <section id="ux">
+    <div class="container">
+      <div class="section-label">08 · تجربة المستخدم</div>
+      <h2 class="section-title">تصميم <em>تجربة</em> الأطفال</h2>
+      <p class="section-intro">تصميم موجّه للفئة العمرية +9، واضح وبديهي وممتع بصرياً مع احترام معايير أمان الأطفال.</p>
+
+      <div class="grid-3">
+        <div class="card"><span class="card-icon">🎨</span><div class="card-title">الهوية البصرية</div><ul><li>ألوان زاهية دافئة ومريحة للعين</li><li>شخصيات كرتونية معبّرة</li><li>أيقونات كبيرة وأزرار واضحة</li><li>خط عربي مقروء وجذاب</li><li>رسوم متحركة مرحة عند كل إنجاز</li></ul></div>
+        <div class="card"><span class="card-icon">📱</span><div class="card-title">واجهة الموبايل</div><ul><li>تحكم بالإصبع الواحد (Single Thumb)</li><li>جلسات قصيرة 3-5 دقائق كافية</li><li>لا نصوص طويلة — صور وأيقونات</li><li>حفظ تلقائي مستمر (Cloud Save)</li></ul></div>
+        <div class="card"><span class="card-icon">🛡️</span><div class="card-title">أمان الأطفال</div><ul><li>تأكيد الوالدين قبل أي عملية شراء</li><li>لا تواصل بين اللاعبين (No Chat)</li><li>محتوى مناسب 100% للفئة +9</li><li>لا إعلانات لتطبيقات 18+</li><li>متوافق مع COPPA & GDPR-K</li></ul></div>
+        <div class="card"><span class="card-icon">🔔</span><div class="card-title">نظام الإشعارات</div><ul><li>إشعار "الأرباح جاهزة للجمع"</li><li>إشعار "فلفل يشتاق لك!" (تفاعلي)</li><li>تذكير يومي بالمهام (قابل للتخصيص)</li><li>لا أكثر من إشعارين يومياً</li></ul></div>
+        <div class="card"><span class="card-icon">🌍</span><div class="card-title">التعريب والترجمة</div><ul><li>العربية هي اللغة الأساسية</li><li>تصميم RTL أصيل (ليس مقلوباً)</li><li>أسماء شخصيات عربية أصيلة</li><li>الإنجليزية كلغة ثانوية</li><li>أصوات عربية فصيحة وعامية خفيفة</li></ul></div>
+        <div class="card"><span class="card-icon">⚙️</span><div class="card-title">الأداء والتقنية</div><ul><li>Unity 6 URP للتوافق الواسع</li><li>مستهدف: 60fps على أجهزة متوسطة</li><li>حجم التطبيق أقل من 150MB</li><li>يعمل بدون إنترنت (Offline Mode)</li><li>مزامنة سحابية عند الاتصال</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>🦈 <strong>القرش سلطان: مطبخ الآيدل</strong></p>
+    <p style="margin-top:8px;">وثيقة تصميم اللعبة (GDD) — الإصدار 1.0 — لاستخدام الفريق الداخلي فقط</p>
+    <p style="margin-top:4px;">جميع الحقوق محفوظة · Unity 6 URP · Android & iOS · +9</p>
+  </footer>
+
+</div>
+
+<script>
+  const bubblesContainer = document.getElementById('bubbles');
+  for (let i = 0; i < 18; i++) {
+    const b = document.createElement('div');
+    b.className = 'bubble';
+    const size = Math.random() * 60 + 10;
+    b.style.cssText = `width:${size}px;height:${size}px;right:${Math.random()*100}%;animation-duration:${Math.random()*15+10}s;animation-delay:${Math.random()*15}s;`;
+    bubblesContainer.appendChild(b);
+  }
+</script>
+</body>
+</html>

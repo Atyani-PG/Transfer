@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GDD — لولوة ران 3D | Loulwa Run 3D</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Cairo:wght@400;600;700;900&family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pink:#FF4D9E;--pink2:#FF85C0;--pink-glow:rgba(255,77,158,.35);
+  --mint:#00E5A0;--mint2:#7FFFD4;--mint-glow:rgba(0,229,160,.3);
+  --yellow:#FFD93D;--orange:#FF6B35;--sky:#5BC8FA;--purple:#9B59F5;--red:#FF5252;
+  --bg:#08071A;--card:#12103A;--card2:#1A1648;
+  --text:#EDE8FF;--text2:#A89ED4;--text3:#6B5FA0;
+  --border:rgba(155,89,245,.18);--border2:rgba(255,77,158,.2);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+
+/* STARS */
+.stars{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.star{position:absolute;background:#fff;border-radius:50%;animation:twinkle var(--d,3s) ease-in-out infinite var(--delay,0s)}
+@keyframes twinkle{0%,100%{opacity:.1;transform:scale(1)}50%{opacity:.7;transform:scale(1.4)}}
+
+/* ORBS */
+.orbs{position:fixed;inset:0;z-index:0;pointer-events:none}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.11}
+.o1{width:600px;height:600px;background:var(--pink);top:-200px;right:-150px;animation:drift 15s ease-in-out infinite}
+.o2{width:500px;height:500px;background:var(--purple);bottom:-100px;left:-150px;animation:drift 18s ease-in-out infinite reverse}
+.o3{width:350px;height:350px;background:var(--mint);top:40%;right:20%;animation:drift 12s ease-in-out infinite 3s}
+.o4{width:400px;height:400px;background:var(--sky);bottom:20%;right:-100px;animation:drift 20s ease-in-out infinite 6s}
+@keyframes drift{0%,100%{transform:translate(0,0)}33%{transform:translate(40px,-40px)}66%{transform:translate(-30px,30px)}}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:rgba(8,7,26,.85);backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}
+.nav-logo{display:flex;align-items:center;gap:10px}
+.nav-ico{width:34px;height:34px;background:linear-gradient(135deg,var(--pink),var(--purple));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.nav-brand{font-family:'Cairo',sans-serif;font-weight:900;font-size:1rem;background:linear-gradient(135deg,var(--pink),var(--sky));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.lang-toggle{display:flex;background:var(--card2);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.lang-btn{padding:6px 14px;font-size:.78rem;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--text2);transition:all .2s}
+.lang-btn.on{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff}
+.nav-links{display:flex;gap:1.2rem;list-style:none}
+.nav-links a{color:var(--text2);text-decoration:none;font-size:.8rem;font-weight:600;transition:color .2s}
+.nav-links a:hover{color:var(--pink)}
+
+/* LANGUAGE */
+.lang-ar .en-only{display:none!important}
+.lang-en .ar-only{display:none!important}
+.lang-en{direction:ltr;text-align:left}
+.lang-ar{direction:rtl;text-align:right}
+
+/* LOOP direction fix */
+.lang-ar .loop-wrap{flex-direction:row-reverse}
+.lang-ar .loop-arrow{transform:scaleX(-1)}
+
+/* HERO */
+#hero{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 2rem 4rem}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(255,77,158,.1);border:1px solid rgba(255,77,158,.3);border-radius:100px;padding:6px 18px;font-size:.78rem;font-weight:700;color:var(--pink2);letter-spacing:.06em;margin-bottom:2rem;text-transform:uppercase}
+.hero-title{font-family:'Cairo',sans-serif;font-weight:900;font-size:clamp(3rem,8vw,6rem);line-height:1.05;margin-bottom:.5rem}
+.title-glow{display:block;background:linear-gradient(135deg,var(--pink) 0%,var(--purple) 40%,var(--sky) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 30px var(--pink-glow));animation:tpulse 4s ease-in-out infinite}
+@keyframes tpulse{0%,100%{filter:drop-shadow(0 0 30px var(--pink-glow))}50%{filter:drop-shadow(0 0 60px var(--pink-glow))}}
+.hero-sub{color:var(--text2);font-size:1.1rem;line-height:1.8;max-width:620px;margin:1.5rem auto 3rem}
+.hero-stats{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-bottom:2.5rem}
+.stat-pill{display:flex;flex-direction:column;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1rem 1.5rem;min-width:110px}
+.stat-v{font-family:'Cairo',sans-serif;font-size:1.4rem;font-weight:900;color:var(--pink)}
+.stat-v.m{color:var(--mint)}.stat-v.s{color:var(--sky)}.stat-v.y{color:var(--yellow)}
+.stat-l{font-size:.7rem;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+
+/* SECTIONS */
+.sec{position:relative;z-index:1;padding:5rem 2rem;max-width:1120px;margin:0 auto}
+.stag{display:inline-block;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.18em;color:var(--pink);background:rgba(255,77,158,.08);border:1px solid rgba(255,77,158,.25);border-radius:4px;padding:4px 12px;margin-bottom:1rem}
+.stag.m{color:var(--mint);background:rgba(0,229,160,.08);border-color:rgba(0,229,160,.25)}
+.stag.s{color:var(--sky);background:rgba(91,200,250,.08);border-color:rgba(91,200,250,.25)}
+.stag.y{color:var(--yellow);background:rgba(255,217,61,.08);border-color:rgba(255,217,61,.25)}
+.stag.p{color:#c4b5fd;background:rgba(155,89,245,.08);border-color:rgba(155,89,245,.25)}
+.sec-title{font-family:'Cairo',sans-serif;font-weight:900;font-size:clamp(1.8rem,4vw,2.7rem);line-height:1.2;margin-bottom:.75rem}
+.sec-desc{color:var(--text2);font-size:.95rem;line-height:1.9;max-width:720px}
+
+/* DIVIDERS */
+.divider{position:relative;z-index:1;display:flex;align-items:center;gap:1.5rem;padding:0 2rem;max-width:1120px;margin:2rem auto}
+.dline{flex:1;height:1px;background:var(--border)}
+.dbadge{padding:10px 28px;border-radius:100px;font-family:'Cairo',sans-serif;font-weight:900;font-size:.95rem;white-space:nowrap}
+.db-p{background:linear-gradient(135deg,rgba(255,77,158,.25),rgba(155,89,245,.25));border:1px solid rgba(255,77,158,.4);color:var(--pink2)}
+.db-m{background:linear-gradient(135deg,rgba(0,229,160,.18),rgba(91,200,250,.18));border:1px solid rgba(0,229,160,.35);color:var(--mint2)}
+.db-y{background:linear-gradient(135deg,rgba(255,217,61,.18),rgba(255,107,53,.18));border:1px solid rgba(255,217,61,.35);color:var(--yellow)}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.8rem;transition:border-color .3s,transform .3s,box-shadow .3s}
+.card:hover{border-color:rgba(255,77,158,.4);transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,77,158,.1)}
+.hcard{background:linear-gradient(135deg,rgba(255,77,158,.06),rgba(155,89,245,.06));border:1px solid rgba(255,77,158,.22);border-radius:20px;padding:2.5rem}
+.hcard.m{background:linear-gradient(135deg,rgba(0,229,160,.06),rgba(91,200,250,.06));border-color:rgba(0,229,160,.22)}
+.hcard.y{background:linear-gradient(135deg,rgba(255,217,61,.06),rgba(255,107,53,.06));border-color:rgba(255,217,61,.22)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem}
+.card-ico{font-size:2.2rem;margin-bottom:1rem}
+.card-t{font-family:'Cairo',sans-serif;font-weight:700;font-size:1rem;margin-bottom:.5rem}
+.card-b{font-size:.86rem;color:var(--text2);line-height:1.85}
+
+/* TAGS */
+.tag{display:inline-block;padding:4px 12px;border-radius:100px;font-size:.76rem;font-weight:700;margin:3px}
+.tp{background:rgba(255,77,158,.12);color:var(--pink2);border:1px solid rgba(255,77,158,.3)}
+.tm{background:rgba(0,229,160,.12);color:var(--mint);border:1px solid rgba(0,229,160,.3)}
+.ts{background:rgba(91,200,250,.12);color:var(--sky);border:1px solid rgba(91,200,250,.3)}
+.ty{background:rgba(255,217,61,.12);color:var(--yellow);border:1px solid rgba(255,217,61,.3)}
+.tpu{background:rgba(155,89,245,.12);color:#c4b5fd;border:1px solid rgba(155,89,245,.3)}
+.to{background:rgba(255,107,53,.12);color:var(--orange);border:1px solid rgba(255,107,53,.3)}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:.86rem}
+.tbl th{background:rgba(255,77,158,.1);color:var(--pink2);font-weight:700;padding:11px 16px;border-bottom:1px solid var(--border2);font-family:'Cairo',sans-serif}
+.tbl td{padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--text2);line-height:1.6;vertical-align:top}
+.tbl tr:hover td{background:rgba(255,255,255,.02)}
+.tbl.m th{background:rgba(0,229,160,.1);color:var(--mint);border-bottom-color:rgba(0,229,160,.2)}
+.tbl.y th{background:rgba(255,217,61,.1);color:var(--yellow);border-bottom-color:rgba(255,217,61,.2)}
+
+/* CORE LOOP */
+.loop-wrap{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;padding:2rem 0}
+.loop-node{display:flex;flex-direction:column;align-items:center;text-align:center;width:95px}
+.lc{width:62px;height:62px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:.5rem}
+.lcp{background:rgba(255,77,158,.15);border:2px solid rgba(255,77,158,.5);box-shadow:0 0 18px rgba(255,77,158,.2)}
+.lcu{background:rgba(155,89,245,.15);border:2px solid rgba(155,89,245,.5);box-shadow:0 0 18px rgba(155,89,245,.2)}
+.lcm{background:rgba(0,229,160,.15);border:2px solid rgba(0,229,160,.5);box-shadow:0 0 18px rgba(0,229,160,.2)}
+.lcy{background:rgba(255,217,61,.15);border:2px solid rgba(255,217,61,.5);box-shadow:0 0 18px rgba(255,217,61,.2)}
+.lcs{background:rgba(91,200,250,.15);border:2px solid rgba(91,200,250,.5);box-shadow:0 0 18px rgba(91,200,250,.2)}
+.lco{background:rgba(255,107,53,.15);border:2px solid rgba(255,107,53,.5);box-shadow:0 0 18px rgba(255,107,53,.2)}
+.loop-label{font-size:.7rem;color:var(--text2);font-weight:700;line-height:1.3}
+.loop-arrow{font-size:1.4rem;color:var(--text3);flex-shrink:0;margin:0 2px}
+
+/* POWER CARDS */
+.pcrd{background:var(--card2);border-radius:16px;padding:1.5rem;border:1px solid var(--border);position:relative;overflow:hidden;transition:transform .3s,border-color .3s}
+.pcrd:hover{transform:translateY(-3px)}
+.pcrd-head{display:flex;align-items:center;gap:12px;margin-bottom:1rem}
+.pcrd-ico{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+.pcrd-name{font-family:'Cairo',sans-serif;font-weight:800;font-size:1.05rem}
+.pcrd-sub{font-size:.76rem;color:var(--text2);font-weight:600;margin-top:2px}
+.pcrd-body{font-size:.84rem;color:var(--text2);line-height:1.85}
+.pcrd-tags{margin-top:.75rem}
+
+/* TIMELINE */
+.tl-wrap{position:relative;padding-right:2rem}
+.lang-en .tl-wrap{padding-right:0;padding-left:2rem}
+.tl-wrap::before{content:'';position:absolute;right:8px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--pink),var(--purple),var(--mint),transparent)}
+.lang-en .tl-wrap::before{right:auto;left:8px}
+.tl-item{position:relative;margin-bottom:2.5rem;padding-right:2rem}
+.lang-en .tl-item{padding-right:0;padding-left:2rem}
+.tl-dot{position:absolute;right:-1.5rem;top:5px;width:16px;height:16px;border-radius:50%;background:var(--pink);border:3px solid var(--bg);box-shadow:0 0 14px var(--pink-glow)}
+.lang-en .tl-dot{right:auto;left:-1.5rem}
+.tl-dot.m{background:var(--mint);box-shadow:0 0 14px var(--mint-glow)}
+.tl-dot.y{background:var(--yellow);box-shadow:0 0 14px rgba(255,217,61,.4)}
+.tl-dot.s{background:var(--sky);box-shadow:0 0 14px rgba(91,200,250,.4)}
+.tl-dot.p{background:var(--purple);box-shadow:0 0 14px rgba(155,89,245,.4)}
+.tl-ph{font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--pink);font-weight:800;margin-bottom:4px}
+.tl-ph.m{color:var(--mint)}.tl-ph.y{color:var(--yellow)}.tl-ph.s{color:var(--sky)}.tl-ph.p{color:var(--purple)}
+.tl-t{font-family:'Cairo',sans-serif;font-weight:700;font-size:1rem;margin-bottom:.5rem}
+.tl-b{font-size:.84rem;color:var(--text2);line-height:1.85}
+.tl-chip{display:inline-block;margin-top:8px;padding:3px 12px;border-radius:100px;font-size:.74rem;font-weight:700;background:rgba(255,77,158,.1);color:var(--pink);border:1px solid rgba(255,77,158,.25)}
+.tl-chip.m{background:rgba(0,229,160,.1);color:var(--mint);border-color:rgba(0,229,160,.25)}
+.tl-chip.y{background:rgba(255,217,61,.1);color:var(--yellow);border-color:rgba(255,217,61,.25)}
+.tl-chip.s{background:rgba(91,200,250,.1);color:var(--sky);border-color:rgba(91,200,250,.25)}
+.tl-chip.p{background:rgba(155,89,245,.1);color:#c4b5fd;border-color:rgba(155,89,245,.25)}
+
+/* WORLDS */
+.w-card{border-radius:18px;padding:2rem;position:relative;overflow:hidden}
+.wn{position:absolute;top:1rem;left:1rem;font-family:'Cairo',sans-serif;font-weight:900;font-size:3.5rem;opacity:.06;line-height:1}
+.w1{background:linear-gradient(135deg,rgba(255,77,158,.12),rgba(255,133,192,.06));border:1px solid rgba(255,77,158,.25)}
+.w2{background:linear-gradient(135deg,rgba(91,200,250,.12),rgba(155,89,245,.06));border:1px solid rgba(91,200,250,.25)}
+.w3{background:linear-gradient(135deg,rgba(0,229,160,.12),rgba(91,200,250,.06));border:1px solid rgba(0,229,160,.25)}
+.w4{background:linear-gradient(135deg,rgba(255,217,61,.12),rgba(255,107,53,.06));border:1px solid rgba(255,217,61,.25)}
+
+/* COLLECT */
+.citem{display:flex;align-items:center;gap:12px;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem}
+.cico{font-size:2rem;flex-shrink:0}
+.cname{font-family:'Cairo',sans-serif;font-weight:700;font-size:.9rem;margin-bottom:2px}
+.cdesc{font-size:.78rem;color:var(--text2)}
+
+/* KPI */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1rem;margin-bottom:2rem}
+.kpi{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:1.2rem;text-align:center}
+.kpi-v{font-family:'Cairo',sans-serif;font-size:1.5rem;font-weight:900;background:linear-gradient(135deg,var(--pink),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.kpi-v.m{background:linear-gradient(135deg,var(--mint),var(--sky));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.kpi-l{font-size:.72rem;color:var(--text2);margin-top:4px}
+
+/* TOOL */
+.tool{display:flex;align-items:center;gap:12px;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;margin-bottom:8px}
+.t-ico{font-size:1.4rem;flex-shrink:0}
+.t-n{font-weight:700;font-size:.88rem}
+.t-r{font-size:.74rem;color:var(--text2)}
+
+/* VERSION BOX */
+.ver-box{border-radius:20px;padding:2rem;margin-bottom:1.5rem;border:2px solid}
+.ver-1{border-color:rgba(0,229,160,.4);background:linear-gradient(135deg,rgba(0,229,160,.06),rgba(91,200,250,.04))}
+.ver-2{border-color:rgba(255,77,158,.3);background:linear-gradient(135deg,rgba(255,77,158,.05),rgba(155,89,245,.04))}
+.ver-3{border-color:rgba(255,217,61,.3);background:linear-gradient(135deg,rgba(255,217,61,.05),rgba(255,107,53,.04))}
+.ver-label{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;font-size:.8rem;font-weight:800;margin-bottom:1rem}
+.vl-1{background:rgba(0,229,160,.15);color:var(--mint);border:1px solid rgba(0,229,160,.35)}
+.vl-2{background:rgba(255,77,158,.15);color:var(--pink2);border:1px solid rgba(255,77,158,.35)}
+.vl-3{background:rgba(255,217,61,.15);color:var(--yellow);border:1px solid rgba(255,217,61,.35)}
+
+/* DEADLINE */
+.deadline{background:linear-gradient(135deg,rgba(255,217,61,.07),rgba(255,107,53,.07));border:2px solid rgba(255,217,61,.3);border-radius:20px;padding:2.5rem;position:relative;overflow:hidden;margin-bottom:2.5rem}
+.deadline::before{content:'⏱';position:absolute;right:2rem;top:50%;transform:translateY(-50%);font-size:6rem;opacity:.05}
+
+/* OBS BADGE */
+.ob-g{display:inline-block;padding:3px 10px;border-radius:100px;font-size:.72rem;font-weight:700;background:rgba(255,107,53,.15);color:var(--orange);border:1px solid rgba(255,107,53,.3)}
+.ob-a{display:inline-block;padding:3px 10px;border-radius:100px;font-size:.72rem;font-weight:700;background:rgba(91,200,250,.15);color:var(--sky);border:1px solid rgba(91,200,250,.3)}
+.ob-mv{display:inline-block;padding:3px 10px;border-radius:100px;font-size:.72rem;font-weight:700;background:rgba(155,89,245,.15);color:#c4b5fd;border:1px solid rgba(155,89,245,.3)}
+
+/* FADE */
+.fi{opacity:0;transform:translateY(22px);transition:opacity .65s ease,transform .65s ease}
+.fi.vis{opacity:1;transform:translateY(0)}
+
+/* TOC */
+.toc{position:fixed;left:1rem;top:50%;transform:translateY(-50%);z-index:100;display:flex;flex-direction:column;gap:7px}
+.toc-d{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);cursor:pointer;transition:all .2s}
+.toc-d.on{background:var(--pink);transform:scale(1.6)}
+@media(max-width:1280px){.toc{display:none}}
+
+/* FOOTER */
+footer{position:relative;z-index:1;text-align:center;padding:3rem 2rem;border-top:1px solid var(--border);color:var(--text2);font-size:.82rem}
+.footer-logo{font-family:'Cairo',sans-serif;font-weight:900;font-size:1.6rem;background:linear-gradient(135deg,var(--pink),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.5rem}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .g2,.g3,.g4{grid-template-columns:1fr}
+  .nav-links{display:none}
+  .loop-wrap{flex-direction:column!important}
+  .loop-arrow{transform:rotate(90deg)!important}
+  .lang-ar .loop-arrow{transform:rotate(90deg)!important}
+}
+</style>
+</head>
+<body class="lang-ar" dir="rtl">
+
+<!-- bg -->
+<div class="stars" id="stars"></div>
+<div class="orbs"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="orb o4"></div></div>
+
+<!-- toc -->
+<div class="toc">
+  <div class="toc-d on" data-s="hero"></div>
+  <div class="toc-d" data-s="overview"></div>
+  <div class="toc-d" data-s="mechanics"></div>
+  <div class="toc-d" data-s="powers"></div>
+  <div class="toc-d" data-s="collectibles"></div>
+  <div class="toc-d" data-s="worlds"></div>
+  <div class="toc-d" data-s="technical"></div>
+  <div class="toc-d" data-s="timeline"></div>
+  <div class="toc-d" data-s="versions"></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-ico">🌸</div>
+    <span class="nav-brand ar-only">GDD · لولوة ران 3D</span>
+    <span class="nav-brand en-only">GDD · Loulwa Run 3D</span>
+  </div>
+  <ul class="nav-links">
+    <li class="ar-only"><a href="#overview">نظرة عامة</a></li>
+    <li class="ar-only"><a href="#mechanics">الميكانيكا</a></li>
+    <li class="ar-only"><a href="#powers">القدرات</a></li>
+    <li class="ar-only"><a href="#collectibles">المقتنيات</a></li>
+    <li class="ar-only"><a href="#worlds">العوالم</a></li>
+    <li class="ar-only"><a href="#timeline">خطة التطوير</a></li>
+    <li class="en-only"><a href="#overview">Overview</a></li>
+    <li class="en-only"><a href="#mechanics">Mechanics</a></li>
+    <li class="en-only"><a href="#powers">Powers</a></li>
+    <li class="en-only"><a href="#collectibles">Collectibles</a></li>
+    <li class="en-only"><a href="#worlds">Worlds</a></li>
+    <li class="en-only"><a href="#timeline">Timeline</a></li>
+  </ul>
+  <div class="lang-toggle">
+    <button class="lang-btn on" onclick="setLang('ar')">العربية</button>
+    <button class="lang-btn" onclick="setLang('en')">English</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<div id="hero" style="position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 2rem 4rem">
+  <div class="eyebrow ar-only">✦ وثيقة تصميم اللعبة · PG Kids · 2025</div>
+  <div class="eyebrow en-only">✦ Game Design Document · PG Kids · 2025</div>
+  <div class="hero-title">
+    <span class="title-glow ar-only">لولوة ران</span>
+    <span class="title-glow en-only">Loulwa Run</span>
+  </div>
+  <div style="font-family:'Poppins',sans-serif;font-size:1rem;color:var(--text2);margin-bottom:2rem;letter-spacing:.08em;font-weight:600">3D ENDLESS RUNNER · MOBILE · V1.0</div>
+  <p class="hero-sub ar-only" style="font-family:'Tajawal',sans-serif">لعبة جري لا تنتهي ثلاثية الأبعاد — لولوة تنطلق عبر عوالم ملوّنة سحرية مع قدرتين ذكيتين ومقتنيات من عالم الأطفال</p>
+  <p class="hero-sub en-only">An infinite 3D runner where Loulwa dashes through magical colorful worlds — featuring 2 smart powers and kid-friendly collectibles that keep children engaged for hours</p>
+  <div class="hero-stats fi">
+    <div class="stat-pill"><span class="stat-v">3</span><span class="stat-l ar-only">أشهر للإطلاق</span><span class="stat-l en-only">Months to Launch</span></div>
+    <div class="stat-pill"><span class="stat-v m">3+</span><span class="stat-l ar-only">الفئة العمرية</span><span class="stat-l en-only">Age Rating</span></div>
+    <div class="stat-pill"><span class="stat-v s">4</span><span class="stat-l ar-only">عوالم سحرية</span><span class="stat-l en-only">Magical Worlds</span></div>
+    <div class="stat-pill"><span class="stat-v y">2</span><span class="stat-l ar-only">قدرات خاصة</span><span class="stat-l en-only">Special Powers</span></div>
+    <div class="stat-pill"><span class="stat-v" style="color:var(--mint);font-size:1.1rem">مجاني</span><span class="stat-l ar-only">النسخة الأولى</span><span class="stat-l en-only">V1 — Free</span></div>
+  </div>
+  <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center">
+    <span class="tag tp">Endless Runner 3D</span>
+    <span class="tag tm ar-only">قدرة عشوائية</span>
+    <span class="tag tm en-only">Random Power</span>
+    <span class="tag ts ar-only">مغناطيس</span>
+    <span class="tag ts en-only">Magnet</span>
+    <span class="tag ty ar-only">iOS + Android</span>
+    <span class="tag ty en-only">iOS + Android</span>
+    <span class="tag tpu ar-only">مجاني تماماً في V1</span>
+    <span class="tag tpu en-only">100% Free in V1</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     OVERVIEW
+══════════════════════════════════════════ -->
+<div class="divider fi"><div class="dline"></div><div class="dbadge db-p ar-only">🌟 نظرة عامة</div><div class="dbadge db-p en-only">🌟 Overview</div><div class="dline"></div></div>
+
+<section id="overview" class="sec fi">
+  <div class="stag ar-only">✦ نظرة عامة</div><div class="stag en-only">✦ Overview</div>
+  <h2 class="sec-title ar-only" style="font-family:'Cairo',sans-serif">عن لولوة ران</h2>
+  <h2 class="sec-title en-only" style="font-family:'Poppins',sans-serif;font-weight:800">About Loulwa Run</h2>
+
+  <div class="g2" style="margin:2rem 0">
+    <div class="hcard">
+      <div class="stag ar-only">المفهوم</div><div class="stag en-only">Concept</div>
+      <h3 class="ar-only" style="font-family:'Cairo',sans-serif;font-weight:900;font-size:1.2rem;margin:.5rem 0">فكرة اللعبة</h3>
+      <h3 class="en-only" style="font-family:'Poppins',sans-serif;font-weight:800;font-size:1.1rem;margin:.5rem 0">Core Concept</h3>
+      <p class="ar-only" style="color:var(--text2);font-size:.88rem;line-height:1.9;font-family:'Tajawal',sans-serif;margin-bottom:1rem">لولوة تجري تلقائياً في ممرات سحرية ملوّنة. اللاعب يتحكم بتحريكها يمين ويسار والقفز والانزلاق — مع قدرتين ذكيتين تُميّزان اللعبة وتجعلان الأطفال يعودون إليها يومياً.</p>
+      <p class="en-only" style="color:var(--text2);font-size:.88rem;line-height:1.9;margin-bottom:1rem">Loulwa runs automatically through magical colorful paths. The player controls lane changes, jumping and sliding — plus 2 smart powers that make the game unique and keep children coming back every day.</p>
+      <div><span class="tag tp">Endless Runner</span><span class="tag ts">3 Lanes</span><span class="tag tm ar-only">قدرتان</span><span class="tag tm en-only">2 Powers</span></div>
+    </div>
+    <div class="hcard m">
+      <div class="stag m ar-only">الإصدار الأول</div><div class="stag m en-only">Version 1</div>
+      <h3 class="ar-only" style="font-family:'Cairo',sans-serif;font-weight:900;font-size:1.2rem;margin:.5rem 0">فلسفة V1</h3>
+      <h3 class="en-only" style="font-family:'Poppins',sans-serif;font-weight:800;font-size:1.1rem;margin:.5rem 0">V1 Philosophy</h3>
+      <p class="ar-only" style="color:var(--text2);font-size:.88rem;line-height:1.9;font-family:'Tajawal',sans-serif;margin-bottom:1rem">النسخة الأولى مجانية 100% — بدون أي مشتريات داخلية. الهدف بناء قاعدة مستخدمين وجمع ملاحظاتهم أولاً. المشتريات الداخلية تأتي في النسخ القادمة فقط.</p>
+      <p class="en-only" style="color:var(--text2);font-size:.88rem;line-height:1.9;margin-bottom:1rem">Version 1 is 100% free — zero in-app purchases. The goal is to build a user base and gather feedback first. In-app purchases come in future versions only.</p>
+      <div><span class="tag tm">100% Free V1</span><span class="tag ts ar-only">IAP في V2+</span><span class="tag ts en-only">IAP in V2+</span></div>
+    </div>
+  </div>
+
+  <div class="hcard fi">
+    <table class="tbl">
+      <thead>
+        <tr><th class="ar-only">البند</th><th class="ar-only">التفاصيل</th><th class="en-only">Item</th><th class="en-only">Details</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong class="ar-only">اسم اللعبة</strong><strong class="en-only">Game Name</strong></td><td><strong style="color:var(--pink2)">Loulwa Run — لولوة ران</strong></td></tr>
+        <tr><td><strong class="ar-only">النوع</strong><strong class="en-only">Genre</strong></td><td>3D Endless Runner</td></tr>
+        <tr><td><strong class="ar-only">المنصات</strong><strong class="en-only">Platforms</strong></td><td>iOS (iPhone + iPad) · Android (Phone + Tablet)</td></tr>
+        <tr><td><strong class="ar-only">الفئة العمرية</strong><strong class="en-only">Target Age</strong></td><td><span class="ar-only">أطفال 3–8 سنوات</span><span class="en-only">Children 3–8 years</span></td></tr>
+        <tr><td><strong class="ar-only">اللغة</strong><strong class="en-only">Language</strong></td><td><span class="ar-only">عربي كامل — نص وصوت وواجهة</span><span class="en-only">Full Arabic — text, voice, UI</span></td></tr>
+        <tr><td><strong class="ar-only">نموذج العائد — V1</strong><strong class="en-only">Revenue — V1</strong></td><td><strong style="color:var(--mint)"><span class="ar-only">🆓 مجاني 100% — بدون IAP — بدون إعلانات</span><span class="en-only">🆓 100% Free — No IAP — No ads</span></strong></td></tr>
+        <tr><td><strong class="ar-only">نموذج العائد — V2+</strong><strong class="en-only">Revenue — V2+</strong></td><td><span class="ar-only" style="color:var(--text2)">مشتريات داخلية (أزياء + محتوى) في الإصدارات القادمة</span><span class="en-only" style="color:var(--text2)">In-app purchases (outfits + content) in future versions</span></td></tr>
+        <tr><td><strong class="ar-only">المحرك</strong><strong class="en-only">Engine</strong></td><td>Unity 2022 LTS</td></tr>
+        <tr><td><strong class="ar-only">مدة التطوير</strong><strong class="en-only">Dev Timeline</strong></td><td><strong style="color:var(--yellow)"><span class="ar-only">3 أشهر (12 أسبوع) — حتى الإطلاق الكامل</span><span class="en-only">3 Months (12 Weeks) — Full launch</span></strong></td></tr>
+        <tr><td><strong class="ar-only">المراجع</strong><strong class="en-only">References</strong></td><td>Subway Surfers · Temple Run · Sonic Dash</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     MECHANICS
+══════════════════════════════════════════ -->
+<div class="divider fi"><div class="dline"></div><div class="dbadge db-m ar-only">🕹️ الميكانيكا</div><div class="dbadge db-m en-only">🕹️ Mechanics</div><div class="dline"></div></div>
+
+<section id="mechanics" class="sec fi">
+  <div class="stag m ar-only">✦ الميكانيكا</div><div class="stag m en-only">✦ Mechanics</div>
+  <h2 class="sec-title ar-only" style="font-family:'Cairo',sans-serif">كيف تُلعب اللعبة؟</h2>
+  <h2 class="sec-title en-only" style="font-family:'Poppins',sans-serif;font-weight:800">How Does It Play?</h2>
+
+  <!-- CORE LOOP -->
+  <div class="card fi" style="margin:2rem 0">
+    <h3 style="font-family:'Cairo',sans-serif;font-weight:700;margin-bottom:1.5rem;font-size:1.05rem" class="ar-only">🔄 الحلقة الأساسية</h3>
+    <h3 style="font-family:'Poppins',sans-serif;font-weight:700;margin-bottom:1.5rem;font-size:1.05rem" class="en-only">🔄 Core Loop</h3>
+    <div class="loop-wrap">
+      <div class="loop-node"><div class="lc lcp">🏃</div><span class="loop-label ar-only" style="font-family:'Tajawal',sans-serif">ابدأ الجري</span><span class="loop-label en-only">Start Running</span></div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-node"><div class="lc lcs">🍼</div><span class="loop-label ar-only" style="font-family:'Tajawal',sans-serif">اجمع المقتنيات</span><span class="loop-label en-only">Collect Items</span></div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-node"><div class="lc lcu">✨</div><span class="loop-label ar-only" style="font-family:'Tajawal',sans-serif">فعّل القدرة</span><span class="loop-label en-only">Use Power</span></div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-node"><div class="lc lcy">🏆</div><span class="loop-label ar-only" style="font-family:'Tajawal',sans-serif">رقم قياسي جديد</span><span class="loop-label en-only">New High Score</span></div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-node"><div class="lc lcm">🎁</div><span class="loop-label ar-only" style="font-family:'Tajawal',sans-serif">افتح مكافأة</span><span class="loop-label en-only">Unlock Reward</span></div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-node"><div class="lc lco">🔄</div><span class="loop-label ar-only" style="font-family:'Tajawal',sans-serif">العب مجدداً!</span><span class="loop-label en-only">Play Again!</span></div>
+    </div>
+  </div>
+
+  <div class="g2 fi" style="margin-bottom:2rem">
+    <div>
+      <h3 style="font-family:'Cairo',sans-serif;font-weight:700;margin-bottom:1.2rem;font-size:1.05rem" class="ar-only">🕹️ نظام التحكم</h3>
+      <h3 style="font-family:'Poppins',sans-serif;font-weight:700;margin-bottom:1.2rem;font-size:1.05rem" class="en-only">🕹️ Controls</h3>
+      <table class="tbl">
+        <thead><tr><th class="ar-only">الإيماءة</th><th class="ar-only">الفعل</th><th class="en-only">Gesture</th><th class="en-only">Action</th></tr></thead>
+        <tbody>
+          <tr><td>👉 Swipe <span class="ar-only">يمين</span><span class="en-only">Right</span></td><td><span class="ar-only">الحارة اليمنى</span><span class="en-only">Right lane</span></td></tr>
+          <tr><td>👈 Swipe <span class="ar-only">يسار</span><span class="en-only">Left</span></td><td><span class="ar-only">الحارة اليسرى</span><span class="en-only">Left lane</span></td></tr>
+          <tr><td>👆 Swipe <span class="ar-only">أعلى</span><span class="en-only">Up</span></td><td><span class="ar-only">قفز</span><span class="en-only">Jump</span></td></tr>
+          <tr><td>👇 Swipe <span class="ar-only">أسفل</span><span class="en-only">Down</span></td><td><span class="ar-only">انزلاق</span><span class="en-only">Slide</span></td></tr>
+          <tr><td>👆 Double Tap</td><td><span class="ar-only">تفعيل القدرة الخاصة</span><span class="en-only">Activate special power</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3 style="font-family:'Cairo',sans-serif;font-weight:700;margin-bottom:1.2rem;font-size:1.05rem" class="ar-only">📐 قواعد اللعبة</h3>
+      <h3 style="font-family:'Poppins',sans-serif;font-weight:700;margin-bottom:1.2rem;font-size:1.05rem" class="en-only">📐 Rules</h3>
+      <div class="card" style="padding:1.4rem">
+        <div style="font-size:.86rem;color:var(--text2);line-height:2.1">
+          <p class="ar-only" style="font-family:'Tajawal',sans-serif">✦ لولوة تجري تلقائياً — السرعة تزداد تدريجياً</p>
+          <p class="ar-only" style="font-family:'Tajawal',sans-serif">✦ 3 حارات متجاورة — Swipe للتبديل</p>
+          <p class="ar-only" style="font-family:'Tajawal',sans-serif">✦ 3 قلوب لكل جلسة — قلب يُفقد بكل اصطدام</p>
+          <p class="ar-only" style="font-family:'Tajawal',sans-serif">✦ السرعة تزيد كل 200 متر</p>
+          <p class="ar-only" style="font-family:'Tajawal',sans-serif">✦ البيئة تتغير تلقائياً كل 500 متر</p>
+          <p class="ar-only" style="font-family:'Tajawal',sans-serif">✦ القدرة تُشحن بجمع 10 مقتنيات</p>
+          <p class="en-only">✦ Loulwa runs automatically, speed increases gradually</p>
+          <p class="en-only">✦ 3 lanes — Swipe to switch</p>
+          <p class="en-only">✦ 3 hearts per session — 1 lost per collision</p>
+          <p class="en-only">✦ Speed increases every 200 meters</p>
+          <p class="en-only">✦ Environment changes automatically every 500m</p>
+          <p class="en-only">✦ Power charges by collecting 10 items</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OBSTACLES -->
+  <h3 class="fi" style="font-family:'Cairo',sans-serif;font-weight:700;margin-bottom:1.2rem;font-size:1.05rem" class="ar-only">🚧 العقبات</h3>
+  <h3 class="fi" style="font-family:'Poppins',sans-serif;font-weight:700;margin-bottom:1.2rem;font-size:1.05rem" class="en-only">🚧 Obstacles</h3>
+  <div class="hcard fi">
+    <table class="tbl">
+      <thead><tr><th class="ar-only">العقبة</th><th class="ar-only">النوع</th><th class="ar-only">كيف تتجنبها؟</th><th class="ar-only">العالم</th><th class="en-only">Obstacle</th><th class="en-only">Type</th><th class="en-only">How to Avoid</th><th class="en-only">World</th></tr></thead>
+      <tbody>
+        <tr><td>🪨 <span class="ar-only">صخرة</span><span class="en-only">Rock</span></td><td><span class="ob-g"><span class="ar-only">أرضية</span><span class="en-only">Ground</span></span></td><td><span class="ar-only">قفز أو غيّر حارة</span><span class="en-only">Jump or lane switch</span></td><td><span class="ar-only">الكل</span><span class="en-only">All</span></td></tr>
+        <tr><td>🌿 <span class="ar-only">فرع شجرة</span><span class="en-only">Tree Branch</span></td><td><span class="ob-a"><span class="ar-only">هوائية</span><span class="en-only">Air</span></span></td><td><span class="ar-only">انزلق</span><span class="en-only">Slide</span></td><td><span class="ar-only">الغابة</span><span class="en-only">Forest</span></td></tr>
+        <tr><td>🧁 <span class="ar-only">برج كيك</span><span class="en-only">Cake Tower</span></td><td><span class="ob-g"><span class="ar-only">أرضية</span><span class="en-only">Ground</span></span></td><td><span class="ar-only">غيّر حارة</span><span class="en-only">Lane switch</span></td><td><span class="ar-only">الحلوى</span><span class="en-only">Candy</span></td></tr>
+        <tr><td>🍭 <span class="ar-only">عصا حلوى أفقية</span><span class="en-only">Lollipop Bar</span></td><td><span class="ob-a"><span class="ar-only">هوائية</span><span class="en-only">Air</span></span></td><td><span class="ar-only">انزلق</span><span class="en-only">Slide</span></td><td><span class="ar-only">الحلوى</span><span class="en-only">Candy</span></td></tr>
+        <tr><td>🌊 <span class="ar-only">موجة بحرية</span><span class="en-only">Ocean Wave</span></td><td><span class="ob-mv"><span class="ar-only">متحركة</span><span class="en-only">Moving</span></span></td><td><span class="ar-only">اقفز في الوقت المناسب</span><span class="en-only">Time your jump</span></td><td><span class="ar-only">الشاطئ</span><span class="en-only">Beach</span></td></tr>
+        <tr><td>🦀 <span class="ar-only">سرطان بحر</span><span class="en-only">Crab</span></td><td><span class="ob-mv"><span class="ar-only">متحركة</span><span class="en-only">Moving</span></span></td><td><span class="ar-only">تابعه وتجنّبه</span><span class="en-only">Track and dodge</span></td><td><span class="ar-only">الشاطئ</span><span class="en-only">Beach</span></td></tr>
+        <tr><td>☁️ <span class="ar-only">سحابة كهربائية</span><span class="en-only">Storm Cloud</span></td><td><span class="ob-mv"><span class="ar-only">متحركة</span><span class="en-only">Moving</span></span></td><td><span class="ar-only">انتظر ثم اعبر</span><span class="en-only">Wait then pass</span></td><td><span class="ar-only">النجوم</span><span class="en-only">Stars</span></td></tr>
+        <tr><td>🌟 <span class="ar-only">نجمة دوّارة</span><span class="en-only">Spinning Star</span></td><td><span class="ob-mv"><span class="ar-only">دوّارة</span><span class="en-only">Rotating</span></span></td><td><span class="ar-only">قفز وانزلاق بالتناوب</span><span class="en-only">Alternate jump/slide</span></td><td><span class="ar-only">النجوم</span><span class="en-only">Stars</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     POWERS
+══════════════════════════════════════════ -->
+<div class="divider fi"><div class="dline"></div><div class="dbadge db-p ar-only">✨ القدرتان الخاصتان</div><div class="dbadge db-p en-only">✨ The Two Special Powers</div><div class="dline"></div></div>
+
+<section id="powers" class="sec fi">
+  <div class="stag ar-only">✦ القدرات</div><div class="stag en-only">✦ Powers</div>
+  <h2 class="sec-title ar-only" style="font-family:'Cairo',sans-serif">قدرتان — بسيطتان وفعّالتان</h2>
+  <h2 class="sec-title en-only" style="font-family:'Poppins',sans-serif;font-weight:800">Two Powers — Simple & Effective</h2>
+  <p class="sec-desc ar-only fi" style="font-family:'Tajawal',sans-serif;margin-bottom:2.5rem">قدرتان فقط — كل واحدة واضحة تماماً للطفل. تُشحنان بنفس الطريقة وتُفعَّلان بـ Double Tap. عند الشحن تظهر أيقونة عشوائية: إما المغناطيس وإما القدرة العشوائية</p>
+  <p class="sec-desc en-only fi" style="margin-bottom:2.5rem">Just two powers — each crystal-clear for a child. Both charged the same way and activated with a Double Tap. When charged, a random icon appears: either the Magnet or the Random Power</p>
+
+  <div class="g2 fi" style="margin-bottom:2rem">
+
+    <!-- POWER 1: MAGNET -->
+    <div class="pcrd" style="border-color:rgba(255,217,61,.35)">
+      <div style="position:absolute;top:0;right:0;width:100px;height:100px;background:radial-gradient(circle,rgba(255,217,61,.15),transparent 70%);pointer-events:none"></div>
+      <div class="pcrd-head">
+        <div class="pcrd-ico" style="background:rgba(255,217,61,.15);border:2px solid rgba(255,217,61,.5)">🧲</div>
+        <div>
+          <div class="pcrd-name ar-only" style="font-family:'Cairo',sans-serif">المغناطيس</div>
+          <div class="pcrd-name en-only" style="font-family:'Poppins',sans-serif">Magnet</div>
+          <div class="pcrd-sub ar-only" style="font-family:'Tajawal',sans-serif">يجذب كل المقتنيات القريبة</div>
+          <div class="pcrd-sub en-only">Attracts all nearby collectibles</div>
+        </div>
+      </div>
+      <p class="pcrd-body ar-only" style="font-family:'Tajawal',sans-serif">يظهر مغناطيس ضخم ولامع يطير أمام لولوة — يشفط كل زجاجات الحليب والنجوم في الحارات الثلاث تلقائياً لمدة <strong style="color:var(--yellow)">8 ثوانٍ</strong>. الطفل لا يحتاج أن يتحرك — المقتنيات تأتي إليه! تأثير صوتي طريف يشبه صوت الشفط يُضحك الأطفال.</p>
+      <p class="pcrd-body en-only">A large glowing magnet flies ahead of Loulwa — it automatically sucks all milk bottles and stars from all 3 lanes for <strong style="color:var(--yellow)">8 seconds</strong>. The child doesn't need to move — collectibles come to them! A funny suction sound effect makes kids giggle.</p>
+      <div class="pcrd-tags">
+        <span class="tag ty">⏱ 8 <span class="ar-only">ثوانٍ</span><span class="en-only">sec</span></span>
+        <span class="tag ty ar-only">جمع تلقائي</span><span class="tag ty en-only">Auto-collect</span>
+        <span class="tag ty ar-only">كل الحارات</span><span class="tag ty en-only">All lanes</span>
+      </div>
+    </div>
+
+    <!-- POWER 2: RANDOM -->
+    <div class="pcrd" style="border-color:rgba(155,89,245,.35)">
+      <div style="position:absolute;top:0;right:0;width:100px;height:100px;background:radial-gradient(circle,rgba(155,89,245,.15),transparent 70%);pointer-events:none"></div>
+      <div class="pcrd-head">
+        <div class="pcrd-ico" style="background:rgba(155,89,245,.15);border:2px solid rgba(155,89,245,.5)">🎲</div>
+        <div>
+          <div class="pcrd-name ar-only" style="font-family:'Cairo',sans-serif">القدرة العشوائية</div>
+          <div class="pcrd-name en-only" style="font-family:'Poppins',sans-serif">Random Power</div>
+          <div class="pcrd-sub ar-only" style="font-family:'Tajawal',sans-serif">مفاجأة في كل مرة!</div>
+          <div class="pcrd-sub en-only">A surprise every time!</div>
+        </div>
+      </div>
+      <p class="pcrd-body ar-only" style="font-family:'Tajawal',sans-serif">عند التفعيل تظهر مفاجأة عشوائية من <strong style="color:#c4b5fd">4 إمكانيات</strong>: إما <strong>حذاء الزنبرك</strong> — قفز لولوة يرتفع للضعف + يقفز تلقائياً فوق العقبات الأرضية بشكل كوميدي مضحك 🦘 ، وإما <strong>أجنحة الفراشة</strong> — لولوة ترتفع للأعلى وتجمع المقتنيات العالية تلقائياً 🦋 ، وإما <strong>درع وردي</strong> — يمتص اصطداماً واحداً 🛡️ ، وإما <strong>مضاعف النقاط</strong> — يضاعف النقاط ×2 لمدة 6 ثوانٍ ⚡.</p>
+      <p class="pcrd-body en-only">When activated a random surprise appears from <strong style="color:#c4b5fd">4 possibilities</strong>: <strong>Spring Shoes</strong> — Loulwa's jump height doubles + she auto-bounces over ground obstacles comically 🦘 ; <strong>Butterfly Wings</strong> — Loulwa rises high and auto-collects elevated items 🦋 ; <strong>Pink Shield</strong> — absorbs one hit 🛡️ ; or <strong>Score Multiplier</strong> — doubles points ×2 for 6 seconds ⚡.</p>
+      <div class="pcrd-tags">
+        <span class="tag tpu ar-only">4 إمكانيات</span><span class="tag tpu en-only">4 Possibilities</span>
+        <span class="tag tp ar-only">زنبرك 🦘</span><span class="tag tp en-only">Spring 🦘</span>
+        <span class="tag ts ar-only">فراشة 🦋</span><span class="tag ts en-only">Wings 🦋</span>
+        <span class="tag tm ar-only">درع 🛡️</span><span class="tag tm en-only">Shield 🛡️</span>
+        <span class="tag ty ar-only">×2 ⚡</span><span class="tag ty en-only">×2 ⚡</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RANDOM POWER DETAIL TABLE -->
+  <div class="hcard fi" style="margin-bottom:2rem">
+    <h3 style="font-family:'Cairo',sans-serif;font-weight:700;margin-bottom:1.2rem;font-size:1.05rem" class="ar-only">🎲 تفاصيل القدرة العشوائية</h3>
+    <h3 style="font-family:'Poppins',sans-serif;font-weight:700;margin-bottom:1.2rem;font-size:1.05rem" class="en-only">🎲 Random Power Details</h3>
+    <table class="tbl">
+      <thead><tr><th class="ar-only">القدرة</th><th class="ar-only">الوصف</th><th class="ar-only">المدة</th><th class="ar-only">الاحتمالية</th><th class="en-only">Power</th><th class="en-only">Description</th><th class="en-only">Duration</th><th class="en-only">Probability</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>🦘 <strong><span class="ar-only">حذاء الزنبرك</span><span class="en-only">Spring Shoes</span></strong></td>
+          <td><span class="ar-only">قفز لولوة يرتفع للضعف — تقفز تلقائياً فوق العقبات الأرضية بشكل كوميدي مضحك — مستوحى من Subway Surfers hoverboard لكن بطابع أطفال</span><span class="en-only">Loulwa's jump doubles — auto-bounces over ground obstacles comically — inspired by Subway Surfers hoverboard but kid-themed</span></td>
+          <td>5 <span class="ar-only">ثوانٍ</span><span class="en-only">sec</span></td>
+          <td>30%</td>
+        </tr>
+        <tr>
+          <td>🦋 <strong><span class="ar-only">أجنحة الفراشة</span><span class="en-only">Butterfly Wings</span></strong></td>
+          <td><span class="ar-only">لولوة ترتفع للمستوى العلوي من المسار — تجمع المقتنيات العالية التي لا يمكن أخذها عادةً — مثل حقيبة الدهان في Subway Surfers لكن بفراشة جميلة</span><span class="en-only">Loulwa rises to the upper path level — collects elevated items unreachable normally — like Subway Surfers jetpack but as beautiful butterfly wings</span></td>
+          <td>6 <span class="ar-only">ثوانٍ</span><span class="en-only">sec</span></td>
+          <td>25%</td>
+        </tr>
+        <tr>
+          <td>🛡️ <strong><span class="ar-only">الدرع الوردي</span><span class="en-only">Pink Shield</span></strong></td>
+          <td><span class="ar-only">حاجز وردي لامع يحمي لولوة من اصطدام واحد — يكسر ويختفي بعد امتصاص الضربة — مناسب عندما الطريق مزدحم بالعقبات</span><span class="en-only">A glowing pink barrier protects Loulwa from one hit — breaks and disappears after absorbing the hit — ideal when the path is crowded with obstacles</span></td>
+          <td><span class="ar-only">حتى الاصطدام</span><span class="en-only">Until hit</span></td>
+          <td>25%</td>
+        </tr>
+        <tr>
+          <td>⚡ <strong><span class="ar-only">مضاعف النقاط</span><span class="en-only">Score Multiplier</span></strong></td>
+          <td><span class="ar-only">كل نقطة تُجمع تُضاعف ×2 — تأثير بصري نجوم ذهبية تتطاير حول لولوة — يُحفّز الطفل على الجري أطول وأسرع</span><span class="en-only">Every point collected is doubled ×2 — golden stars fly around Loulwa visually — motivates the child to run longer and faster</span></td>
+          <td>6 <span class="ar-only">ثوانٍ</span><span class="en-only">sec</span></td>
+          <td>20%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- HOW POWERS CHARGE -->
+  <div class="hcard m fi">
+    <h3 style="font-family:'Cairo',sans-serif;font-weight:700;margin-bottom:1.2rem;font-size:1.05rem" class="ar-only">⚡ كيف تُشحن القدرة؟</h3>
+    <h3 style="font-family:'Poppins',sans-serif;font-weight:700;margin-bottom:1.2rem;font-size:1.05rem" class="en-only">⚡ How Do Powers Charge?</h3>
+    <div class="g3">
+      <div class="card" style="text-align:center">
+        <div style="font-size:2rem;margin-bottom:.5rem">🍼</div>
+        <div class="card-t ar-only" style="font-family:'Cairo',sans-serif">اجمع 10 مقتنيات</div>
+        <div class="card-t en-only" style="font-family:'Poppins',sans-serif">Collect 10 Items</div>
+        <div class="card-b ar-only" style="font-family:'Tajawal',sans-serif">شريط القدرة يمتلئ تدريجياً مع كل مقتنى</div>
+        <div class="card-b en-only">Power bar fills gradually with each collectible</div>
+      </div>
+      <div class="card" style="text-align:center">
+        <div style="font-size:2rem;margin-bottom:.5rem">💥</div>
+        <div class="card-t ar-only" style="font-family:'Cairo',sans-serif">شريط ممتلئ = يضيء وينبض</div>
+        <div class="card-t en-only" style="font-family:'Poppins',sans-serif">Full Bar = Glows & Pulses</div>
+        <div class="card-b ar-only" style="font-family:'Tajawal',sans-serif">إشارة واضحة جداً للطفل الصغير</div>
+        <div class="card-b en-only">Very clear signal for small children</div>
+      </div>
+      <div class="card" style="text-align:center">
+        <div style="font-size:2rem;margin-bottom:.5rem">🎲</div>
+        <div class="card-t ar-only" style="font-family:'Cairo',sans-serif">Double Tap → مفاجأة!</div>
+        <div class="card-t en-only" style="font-family:'Poppins',sans-serif">Double Tap → Surprise!</div>
+        <div class="card-b ar-only" style="font-family:'Tajawal',sans-serif">مغناطيس أو قدرة عشوائية من الأربع</div>
+        <div class="card-b en-only">Magnet or one of the 4 random powers</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     COLLECTIBLES
+══════════════════════════════════════════ -->
+<div class="divider fi"><div class="dline"></div><div class="dbadge db-m ar-only">🍼 المقتنيات</div><div class="dbadge db-m en-only">🍼 Collectibles</div><div class="dline"></div></div>
+
+<section id="collectibles" class="sec fi">
+  <div class="stag m ar-only">✦ المقتنيات</div><div class="stag m en-only">✦ Collectibles</div>
+  <h2 class="sec-title ar-only" style="font-family:'Cairo',sans-serif">ماذا تجمع لولوة؟</h2>
+  <h2 class="sec-title en-only" style="font-family:'Poppins',sans-serif;font-weight:800">What Does Loulwa Collect?</h2>
+  <p class="sec-desc ar-only fi" style="font-family:'Tajawal',sans-serif;margin-bottom:2.5rem">بدلاً من جواهر وعملات معتادة — لولوة تجمع أشياء يحبها الأطفال من عالمهم اليومي. مقتنى أساسي ثابت في كل العوالم + مقتنيات خاصة بكل عالم</p>
+  <p class="sec-desc en-only fi" style="margin-bottom:2.5rem">Instead of typical gems and coins — Loulwa collects things children love from their daily world. One core collectible throughout + world-exclusive items</p>
+
+  <h4 class="fi" style="font-size:.82rem;color:var(--mint);font-weight:800;margin-bottom:1rem;text-transform:uppercase;letter-spacing:.1em">
+    <span class="ar-only">المقتنيات الأساسية</span><span class="en-only">Core Collectibles</span>
+  </h4>
+  <div class="g2 fi" style="margin-bottom:2rem">
+    <div class="citem"><div class="cico">🍼</div><div><div class="cname ar-only" style="font-family:'Cairo',sans-serif">زجاجة الحليب</div><div class="cname en-only" style="font-family:'Poppins',sans-serif">Milk Bottle</div><div class="cdesc ar-only" style="font-family:'Tajawal',sans-serif">المقتنى الرئيسي — يشحن شريط القدرة</div><div class="cdesc en-only">Main collectible — charges the power bar</div></div><span style="margin-right:auto;font-family:'Cairo',sans-serif;font-weight:800;color:var(--sky)">+1</span></div>
+    <div class="citem"><div class="cico">⭐</div><div><div class="cname ar-only" style="font-family:'Cairo',sans-serif">نجمة لامعة</div><div class="cname en-only" style="font-family:'Poppins',sans-serif">Shining Star</div><div class="cdesc ar-only" style="font-family:'Tajawal',sans-serif">نقاط مضاعفة — تطفو أحياناً في الهواء</div><div class="cdesc en-only">Bonus points — floats in the air occasionally</div></div><span style="margin-right:auto;font-family:'Cairo',sans-serif;font-weight:800;color:var(--yellow)">×2</span></div>
+    <div class="citem"><div class="cico">❤️</div><div><div class="cname ar-only" style="font-family:'Cairo',sans-serif">قلب وردي</div><div class="cname en-only" style="font-family:'Poppins',sans-serif">Pink Heart</div><div class="cdesc ar-only" style="font-family:'Tajawal',sans-serif">نادر جداً — يُضيف قلباً إضافياً</div><div class="cdesc en-only">Very rare — adds an extra heart</div></div><span style="margin-right:auto;font-family:'Cairo',sans-serif;font-weight:800;color:var(--red)">+❤️</span></div>
+    <div class="citem"><div class="cico">🎀</div><div><div class="cname ar-only" style="font-family:'Cairo',sans-serif">ربطة شعر لولوة</div><div class="cname en-only" style="font-family:'Poppins',sans-serif">Loulwa's Hair Bow</div><div class="cdesc ar-only" style="font-family:'Tajawal',sans-serif">نادر — يُفتح بها محتوى في V2+</div><div class="cdesc en-only">Rare — used to unlock content in V2+</div></div><span style="margin-right:auto;font-family:'Cairo',sans-serif;font-weight:800;color:var(--pink)">💄</span></div>
+  </div>
+
+  <h4 class="fi" style="font-size:.82rem;color:var(--pink);font-weight:800;margin-bottom:1rem;text-transform:uppercase;letter-spacing:.1em">
+    <span class="ar-only">مقتنيات حصرية بكل عالم</span><span class="en-only">World-Exclusive Collectibles</span>
+  </h4>
+  <div class="hcard fi">
+    <table class="tbl m">
+      <thead><tr><th class="ar-only">العالم</th><th class="ar-only">المقتنى الحصري</th><th class="ar-only">تأثيره</th><th class="en-only">World</th><th class="en-only">Exclusive Item</th><th class="en-only">Effect</th></tr></thead>
+      <tbody>
+        <tr><td>🌸 <span class="ar-only">الغابة الوردية</span><span class="en-only">Pink Forest</span></td><td>🌺 <span class="ar-only">زهرة وردية</span><span class="en-only">Pink Flower</span></td><td><span class="ar-only">تزيّن الطريق بالزهور لثانيتين — بصري فقط</span><span class="en-only">Decorates path with flowers for 2s — visual only</span></td></tr>
+        <tr><td>🍭 <span class="ar-only">مدينة الحلوى</span><span class="en-only">Candy City</span></td><td>🍪 <span class="ar-only">بسكويت ضخم</span><span class="en-only">Giant Cookie</span></td><td><span class="ar-only">ينكسر إلى قطع صغيرة +50 نقطة فورية</span><span class="en-only">Crumbles into pieces + 50 bonus points</span></td></tr>
+        <tr><td>🌊 <span class="ar-only">شاطئ لولوة</span><span class="en-only">Loulwa's Beach</span></td><td>🐚 <span class="ar-only">صدفة ذهبية</span><span class="en-only">Golden Shell</span></td><td><span class="ar-only">تُطلق موجة هادئة تُبطئ السرعة ثانيتين — راحة مؤقتة</span><span class="en-only">Releases calm wave that slows speed 2s — brief relief</span></td></tr>
+        <tr><td>⭐ <span class="ar-only">سماء النجوم</span><span class="en-only">Star Sky</span></td><td>🌙 <span class="ar-only">قمر صغير</span><span class="en-only">Little Moon</span></td><td><span class="ar-only">يُضيء الطريق ويُظهر المقتنيات المخفية قادماً</span><span class="en-only">Illuminates path and reveals upcoming hidden items</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     WORLDS
+══════════════════════════════════════════ -->
+<div class="divider fi"><div class="dline"></div><div class="dbadge db-m ar-only">🌍 العوالم الأربعة</div><div class="dbadge db-m en-only">🌍 Four Worlds</div><div class="dline"></div></div>
+
+<section id="worlds" class="sec fi">
+  <div class="stag s ar-only">✦ العوالم</div><div class="stag s en-only">✦ Worlds</div>
+  <h2 class="sec-title ar-only" style="font-family:'Cairo',sans-serif">أربعة عوالم سحرية</h2>
+  <h2 class="sec-title en-only" style="font-family:'Poppins',sans-serif;font-weight:800">Four Magical Worlds</h2>
+  <p class="sec-desc ar-only fi" style="font-family:'Tajawal',sans-serif;margin-bottom:2.5rem">كل 500 متر تتغير البيئة تلقائياً بانتقال سينمائي — كل عالم له بصريات وألوان وموسيقى وعقبات مختلفة تماماً</p>
+  <p class="sec-desc en-only fi" style="margin-bottom:2.5rem">Every 500 meters the environment shifts automatically with a cinematic transition — each world has completely different visuals, colors, music, and obstacles</p>
+  <div class="g2 fi">
+    <div class="w-card w1"><span class="wn">01</span><span style="font-size:3rem;margin-bottom:1rem;display:block">🌸</span><div style="font-family:'Cairo',sans-serif;font-weight:900;font-size:1.2rem;margin-bottom:.3rem" class="ar-only">الغابة الوردية</div><div style="font-family:'Poppins',sans-serif;font-weight:900;font-size:1.2rem;margin-bottom:.3rem" class="en-only">Pink Forest</div><div style="font-size:.8rem;color:var(--text2);margin-bottom:.75rem" class="ar-only" style="font-family:'Tajawal',sans-serif">Pink Forest</div><div style="font-size:.8rem;color:var(--text2);margin-bottom:.75rem" class="en-only" style="font-family:'Tajawal',sans-serif">الغابة الوردية</div><p style="font-size:.84rem;color:var(--text2);line-height:1.8;margin-bottom:1rem;font-family:'Tajawal',sans-serif" class="ar-only">غابة ساحرة بأشجار وردية وأزهار ملوّنة — الطريق من أوراق الشجر وحجارة الحديقة. موسيقى هادئة ومرحة</p><p style="font-size:.84rem;color:var(--text2);line-height:1.8;margin-bottom:1rem" class="en-only">Magical forest with pink trees and colorful flowers — path made of leaves and garden stones. Calm, cheerful music</p><div><span class="tag tp ar-only">0م — 500م</span><span class="tag tp en-only">0m — 500m</span><span class="tag ts ar-only">مفتوح دائماً</span><span class="tag ts en-only">Always open</span></div></div>
+    <div class="w-card w2"><span class="wn">02</span><span style="font-size:3rem;margin-bottom:1rem;display:block">🍭</span><div style="font-family:'Cairo',sans-serif;font-weight:900;font-size:1.2rem;margin-bottom:.3rem" class="ar-only">مدينة الحلوى</div><div style="font-family:'Poppins',sans-serif;font-weight:900;font-size:1.2rem;margin-bottom:.3rem" class="en-only">Candy City</div><div style="font-size:.8rem;color:var(--text2);margin-bottom:.75rem" class="ar-only">Candy City</div><div style="font-size:.8rem;color:var(--text2);margin-bottom:.75rem" class="en-only">مدينة الحلوى</div><p style="font-size:.84rem;color:var(--text2);line-height:1.8;margin-bottom:1rem;font-family:'Tajawal',sans-serif" class="ar-only">مدينة بنيت كلها من الحلوى والكيك — الأرض من السكر والمباني من البسكويت. موسيقى منبهة كالكرنفال</p><p style="font-size:.84rem;color:var(--text2);line-height:1.8;margin-bottom:1rem" class="en-only">A city built entirely from candy and cake — sugar ground, biscuit buildings. Upbeat carnival-style music</p><div><span class="tag ts ar-only">500م — 1000م</span><span class="tag ts en-only">500m — 1000m</span><span class="tag tp ar-only">سرعة متوسطة</span><span class="tag tp en-only">Medium speed</span></div></div>
+    <div class="w-card w3"><span class="wn">03</span><span style="font-size:3rem;margin-bottom:1rem;display:block">🌊</span><div style="font-family:'Cairo',sans-serif;font-weight:900;font-size:1.2rem;margin-bottom:.3rem" class="ar-only">شاطئ لولوة</div><div style="font-family:'Poppins',sans-serif;font-weight:900;font-size:1.2rem;margin-bottom:.3rem" class="en-only">Loulwa's Beach</div><div style="font-size:.8rem;color:var(--text2);margin-bottom:.75rem" class="ar-only">Loulwa's Beach</div><div style="font-size:.8rem;color:var(--text2);margin-bottom:.75rem" class="en-only">شاطئ لولوة</div><p style="font-size:.84rem;color:var(--text2);line-height:1.8;margin-bottom:1rem;font-family:'Tajawal',sans-serif" class="ar-only">شاطئ فيروزي بنخيل ملونة وأمواج تتلألأ — لولوة تجري على الرمال الذهبية. موسيقى هادئة كالبحر</p><p style="font-size:.84rem;color:var(--text2);line-height:1.8;margin-bottom:1rem" class="en-only">Turquoise beach with colorful palms and sparkling waves — Loulwa runs on golden sands. Calm ocean-like music</p><div><span class="tag tm ar-only">1000م — 1500م</span><span class="tag tm en-only">1000m — 1500m</span><span class="tag tp ar-only">سرعة عالية</span><span class="tag tp en-only">High speed</span></div></div>
+    <div class="w-card w4"><span class="wn">04</span><span style="font-size:3rem;margin-bottom:1rem;display:block">⭐</span><div style="font-family:'Cairo',sans-serif;font-weight:900;font-size:1.2rem;margin-bottom:.3rem" class="ar-only">سماء النجوم</div><div style="font-family:'Poppins',sans-serif;font-weight:900;font-size:1.2rem;margin-bottom:.3rem" class="en-only">Star Sky</div><div style="font-size:.8rem;color:var(--text2);margin-bottom:.75rem" class="ar-only">Star Sky</div><div style="font-size:.8rem;color:var(--text2);margin-bottom:.75rem" class="en-only">سماء النجوم</div><p style="font-size:.84rem;color:var(--text2);line-height:1.8;margin-bottom:1rem;font-family:'Tajawal',sans-serif" class="ar-only">لولوة تجري على سحب قوس قزح في الليل المضيء — الطريق من النجوم المتلألئة. موسيقى حالمة مذهلة</p><p style="font-size:.84rem;color:var(--text2);line-height:1.8;margin-bottom:1rem" class="en-only">Loulwa runs on rainbow clouds in the glowing night sky — path made of sparkling stars. Dreamy, breathtaking music</p><div><span class="tag ty ar-only">+1500م</span><span class="tag ty en-only">1500m+</span><span class="tag tp ar-only">أقصى سرعة</span><span class="tag tp en-only">Max speed</span></div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     TECHNICAL
+══════════════════════════════════════════ -->
+<div class="divider fi"><div class="dline"></div><div class="dbadge db-y ar-only">⚙️ المواصفات التقنية</div><div class="dbadge db-y en-only">⚙️ Technical Specs</div><div class="dline"></div></div>
+
+<section id="technical" class="sec fi">
+  <div class="stag y ar-only">✦ التقنية</div><div class="stag y en-only">✦ Technical</div>
+  <h2 class="sec-title ar-only" style="font-family:'Cairo',sans-serif">الأدوات والتقنية</h2>
+  <h2 class="sec-title en-only" style="font-family:'Poppins',sans-serif;font-weight:800">Tools & Technology</h2>
+  <div class="kpi-row fi">
+    <div class="kpi"><div class="kpi-v">60</div><div class="kpi-l ar-only">FPS مستهدف</div><div class="kpi-l en-only">Target FPS</div></div>
+    <div class="kpi"><div class="kpi-v m">iOS 13+</div><div class="kpi-l ar-only">الحد الأدنى iOS</div><div class="kpi-l en-only">Min iOS</div></div>
+    <div class="kpi"><div class="kpi-v">Android 8+</div><div class="kpi-l ar-only">أدنى Android</div><div class="kpi-l en-only">Min Android</div></div>
+    <div class="kpi"><div class="kpi-v m">400 MB</div><div class="kpi-l ar-only">أقصى حجم</div><div class="kpi-l en-only">Max Size</div></div>
+    <div class="kpi"><div class="kpi-v" style="font-size:1.1rem">✅ Tablet</div><div class="kpi-l ar-only">دعم تابلت</div><div class="kpi-l en-only">Tablet Ready</div></div>
+    <div class="kpi"><div class="kpi-v m" style="font-size:1.1rem">✅ Offline</div><div class="kpi-l ar-only">لعب بدون نت</div><div class="kpi-l en-only">Offline Play</div></div>
+  </div>
+  <div class="g2 fi">
+    <div>
+      <h4 style="font-size:.82rem;color:var(--pink);font-weight:800;margin-bottom:1rem;text-transform:uppercase;letter-spacing:.1em" class="ar-only">أدوات التطوير</h4>
+      <h4 style="font-size:.82rem;color:var(--pink);font-weight:800;margin-bottom:1rem;text-transform:uppercase;letter-spacing:.1em" class="en-only">Development Tools</h4>
+      <div class="tool"><span class="t-ico">🎮</span><div><div class="t-n">Unity 2022 LTS</div><div class="t-r ar-only" style="font-family:'Tajawal',sans-serif">المحرك الرئيسي — 3D Endless Runner</div><div class="t-r en-only">Main engine — 3D Endless Runner</div></div></div>
+      <div class="tool"><span class="t-ico">🎨</span><div><div class="t-n">Blender 4.0</div><div class="t-r ar-only" style="font-family:'Tajawal',sans-serif">نمذجة لولوة والعوالم والعقبات</div><div class="t-r en-only">3D modeling — Loulwa, worlds, obstacles</div></div></div>
+      <div class="tool"><span class="t-ico">🖌️</span><div><div class="t-n">Adobe Substance 3D</div><div class="t-r ar-only" style="font-family:'Tajawal',sans-serif">تكستشر الشخصيات والبيئات</div><div class="t-r en-only">Character and environment texturing</div></div></div>
+      <div class="tool"><span class="t-ico">✨</span><div><div class="t-n">Unity VFX Graph</div><div class="t-r ar-only" style="font-family:'Tajawal',sans-serif">تأثيرات القدرات والمقتنيات</div><div class="t-r en-only">Power and collectible effects</div></div></div>
+      <div class="tool"><span class="t-ico">🎵</span><div><div class="t-n">FMOD</div><div class="t-r ar-only" style="font-family:'Tajawal',sans-serif">موسيقى تكيفية + صوت عربي</div><div class="t-r en-only">Adaptive music + Arabic voice</div></div></div>
+    </div>
+    <div>
+      <h4 style="font-size:.82rem;color:var(--mint);font-weight:800;margin-bottom:1rem;text-transform:uppercase;letter-spacing:.1em" class="ar-only">أدوات الخدمات</h4>
+      <h4 style="font-size:.82rem;color:var(--mint);font-weight:800;margin-bottom:1rem;text-transform:uppercase;letter-spacing:.1em" class="en-only">Services & Backend</h4>
+      <div class="tool"><span class="t-ico">📊</span><div><div class="t-n">Firebase Analytics</div><div class="t-r ar-only" style="font-family:'Tajawal',sans-serif">تتبع سلوك اللاعبين وأداء اللعبة</div><div class="t-r en-only">Player behavior and game performance</div></div></div>
+      <div class="tool"><span class="t-ico">🏆</span><div><div class="t-n">Google Play Games + Game Center</div><div class="t-r ar-only" style="font-family:'Tajawal',sans-serif">الإنجازات والـ Leaderboard الرسمي</div><div class="t-r en-only">Official achievements and leaderboard</div></div></div>
+      <div class="tool"><span class="t-ico">☁️</span><div><div class="t-n">Firebase Cloud Save</div><div class="t-r ar-only" style="font-family:'Tajawal',sans-serif">حفظ تقدم اللاعب عبر الأجهزة</div><div class="t-r en-only">Cross-device progress saving</div></div></div>
+      <div class="tool"><span class="t-ico">🔔</span><div><div class="t-n">Firebase Cloud Messaging</div><div class="t-r ar-only" style="font-family:'Tajawal',sans-serif">إشعارات المهام اليومية</div><div class="t-r en-only">Daily mission notifications</div></div></div>
+      <div class="tool"><span class="t-ico">💰</span><div><div class="t-n">Unity IAP <span class="ar-only">(V2+ فقط)</span><span class="en-only">(V2+ only)</span></div><div class="t-r ar-only" style="font-family:'Tajawal',sans-serif">مُعدّ للمستقبل — غير مفعّل في V1</div><div class="t-r en-only">Prepared for future — disabled in V1</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     TIMELINE
+══════════════════════════════════════════ -->
+<div class="divider fi"><div class="dline"></div><div class="dbadge db-y ar-only">📅 خطة التطوير — 3 أشهر</div><div class="dbadge db-y en-only">📅 Development Plan — 3 Months</div><div class="dline"></div></div>
+
+<section id="timeline" class="sec fi">
+  <div class="stag y ar-only">✦ خطة التطوير</div><div class="stag y en-only">✦ Dev Plan</div>
+  <h2 class="sec-title ar-only" style="font-family:'Cairo',sans-serif">من الصفر إلى الإطلاق في 3 أشهر</h2>
+  <h2 class="sec-title en-only" style="font-family:'Poppins',sans-serif;font-weight:800">Zero to Launch in 3 Months</h2>
+
+  <div class="deadline fi">
+    <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+      <div style="font-size:2.5rem">⏱️</div>
+      <div>
+        <h3 style="font-family:'Cairo',sans-serif;font-weight:900;font-size:1.3rem;color:var(--yellow);margin-bottom:.3rem" class="ar-only">الـ Deadline: 3 أشهر كاملة — 12 أسبوعاً</h3>
+        <h3 style="font-family:'Poppins',sans-serif;font-weight:800;font-size:1.2rem;color:var(--yellow);margin-bottom:.3rem" class="en-only">Deadline: 3 Full Months — 12 Weeks</h3>
+        <p style="color:var(--text2);font-size:.88rem;font-family:'Tajawal',sans-serif" class="ar-only">مقسّمة على 4 مراحل واضحة — كل مرحلة 3 أسابيع لها تسليم محدد وقابل للاختبار — الأسبوع 9 هو Checkpoint الرئيسي — الأسبوع 12 هو الإطلاق الكامل</p>
+        <p style="color:var(--text2);font-size:.88rem" class="en-only">Divided into 4 clear phases — each phase is 3 weeks with a specific testable deliverable — Week 9 is the main Checkpoint — Week 12 is the full launch</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2 fi">
+    <div class="tl-wrap">
+      <!-- W1-2 -->
+      <div class="tl-item"><div class="tl-dot"></div>
+        <div class="tl-ph ar-only">الأسبوع 1–2</div><div class="tl-ph en-only">Week 1–2</div>
+        <div class="tl-t ar-only" style="font-family:'Cairo',sans-serif">⚙️ البروتوتايب والحركة</div><div class="tl-t en-only" style="font-family:'Poppins',sans-serif">⚙️ Prototype & Movement</div>
+        <div class="tl-b ar-only" style="font-family:'Tajawal',sans-serif">إعداد Unity 3D · Character Controller · حركة لولوة (3 حارات + قفز + انزلاق) · نظام توليد المسار الإجرائي Procedural · كاميرا تتبع ديناميكية · نظام القلوب الثلاثة</div>
+        <div class="tl-b en-only">Unity 3D setup · Character Controller · Loulwa movement (3 lanes + jump + slide) · Procedural track generation · Dynamic follow camera · 3-heart system</div>
+        <span class="tl-chip ar-only">تسليم: لعب أساسي يعمل</span><span class="tl-chip en-only">Deliverable: Working basic gameplay</span>
+      </div>
+      <!-- W3 -->
+      <div class="tl-item"><div class="tl-dot"></div>
+        <div class="tl-ph ar-only">الأسبوع 3</div><div class="tl-ph en-only">Week 3</div>
+        <div class="tl-t ar-only" style="font-family:'Cairo',sans-serif">🌸 عالم الغابة الوردية</div><div class="tl-t en-only" style="font-family:'Poppins',sans-serif">🌸 Pink Forest World</div>
+        <div class="tl-b ar-only" style="font-family:'Tajawal',sans-serif">نمذجة لولوة + كل الـ animations · بيئة الغابة الوردية ثلاثية الأبعاد · العقبات الأولى (3 أنواع) · نظام الاصطدام · تأثيرات VFX أساسية</div>
+        <div class="tl-b en-only">Loulwa 3D model + all animations · Pink Forest 3D environment · First obstacles (3 types) · Collision system · Basic VFX</div>
+        <span class="tl-chip ar-only">تسليم: عالم أول قابل للتجربة</span><span class="tl-chip en-only">Deliverable: Playable first world</span>
+      </div>
+      <!-- W4-5 -->
+      <div class="tl-item"><div class="tl-dot m"></div>
+        <div class="tl-ph m ar-only">الأسبوع 4–5</div><div class="tl-ph m en-only">Week 4–5</div>
+        <div class="tl-t ar-only" style="font-family:'Cairo',sans-serif">🍼 المقتنيات + القدرتان + UI</div><div class="tl-t en-only" style="font-family:'Poppins',sans-serif">🍼 Collectibles + Powers + UI</div>
+        <div class="tl-b ar-only" style="font-family:'Tajawal',sans-serif">نظام جمع الحليب والنجوم والقلوب · قدرة المغناطيس كاملة · القدرة العشوائية الأربع (زنبرك + فراشة + درع + مضاعف) · شريط القدرة · HUD كامل بالعربية RTL · شاشة انتهاء اللعبة والـ High Score</div>
+        <div class="tl-b en-only">Milk/star/heart collection system · Full Magnet power · 4 Random Powers (spring + wings + shield + multiplier) · Power bar · Full RTL Arabic HUD · Game over screen and High Score</div>
+        <span class="tl-chip m ar-only">تسليم: كل القدرات تعمل</span><span class="tl-chip m en-only">Deliverable: All powers working</span>
+      </div>
+      <!-- W6 -->
+      <div class="tl-item"><div class="tl-dot m"></div>
+        <div class="tl-ph m ar-only">الأسبوع 6</div><div class="tl-ph m en-only">Week 6</div>
+        <div class="tl-t ar-only" style="font-family:'Cairo',sans-serif">🍭 عالم الحلوى + المهام اليومية</div><div class="tl-t en-only" style="font-family:'Poppins',sans-serif">🍭 Candy City + Daily Missions</div>
+        <div class="tl-b ar-only" style="font-family:'Tajawal',sans-serif">بيئة مدينة الحلوى كاملة · عقباتها الخاصة · نظام المهام اليومية (3 مهام/يوم) · المكافأة اليومية Daily Streak · انتقال سينمائي بين الغابة والحلوى</div>
+        <div class="tl-b en-only">Full Candy City environment · Its own obstacles · Daily mission system (3 missions/day) · Daily Streak reward · Cinematic transition between Forest and Candy</div>
+        <span class="tl-chip m ar-only">تسليم: عالمان مكتملان</span><span class="tl-chip m en-only">Deliverable: 2 complete worlds</span>
+      </div>
+    </div>
+    <div class="tl-wrap">
+      <!-- W7-8 -->
+      <div class="tl-item"><div class="tl-dot s"></div>
+        <div class="tl-ph s ar-only">الأسبوع 7–8</div><div class="tl-ph s en-only">Week 7–8</div>
+        <div class="tl-t ar-only" style="font-family:'Cairo',sans-serif">🌊⭐ العالمان الثالث والرابع</div><div class="tl-t en-only" style="font-family:'Poppins',sans-serif">🌊⭐ Worlds 3 & 4</div>
+        <div class="tl-b ar-only" style="font-family:'Tajawal',sans-serif">شاطئ لولوة + سماء النجوم · مقتنيات حصرية لكل عالم · كل الانتقالات السينمائية بين العوالم الأربعة · الموسيقى الكاملة لكل عالم · المؤثرات الصوتية والصوت العربي للولوة</div>
+        <div class="tl-b en-only">Loulwa's Beach + Star Sky · Exclusive collectibles per world · All 4-world cinematic transitions · Complete music per world · SFX and Loulwa Arabic voice</div>
+        <span class="tl-chip s ar-only">تسليم: 4 عوالم كاملة</span><span class="tl-chip s en-only">Deliverable: All 4 worlds complete</span>
+      </div>
+      <!-- W9 CHECKPOINT -->
+      <div class="tl-item"><div class="tl-dot s"></div>
+        <div class="tl-ph s ar-only">الأسبوع 9 — CHECKPOINT ✅</div><div class="tl-ph s en-only">Week 9 — CHECKPOINT ✅</div>
+        <div class="tl-t ar-only" style="font-family:'Cairo',sans-serif">🏆 الإنجازات + Leaderboard + اختبار أطفال</div><div class="tl-t en-only" style="font-family:'Poppins',sans-serif">🏆 Achievements + Leaderboard + Child Testing</div>
+        <div class="tl-b ar-only" style="font-family:'Tajawal',sans-serif">20 إنجاز مع شارات جميلة · Leaderboard عائلي/أصدقاء · اختبار مع أطفال حقيقيين 3-8 سنوات · جمع ملاحظات حقيقية · إصلاح المشاكل الجوهرية</div>
+        <div class="tl-b en-only">20 achievements with beautiful badges · Family/friends leaderboard · Real child testing (3-8 years) · Collect real feedback · Fix core issues</div>
+        <span class="tl-chip s ar-only">نقطة تحقق: اللعبة كاملة للاختبار</span><span class="tl-chip s en-only">Checkpoint: Full game ready for testing</span>
+      </div>
+      <!-- W10-11 -->
+      <div class="tl-item"><div class="tl-dot y"></div>
+        <div class="tl-ph y ar-only">الأسبوع 10–11</div><div class="tl-ph y en-only">Week 10–11</div>
+        <div class="tl-t ar-only" style="font-family:'Cairo',sans-serif">⚡ التوازن والتلميع والأداء</div><div class="tl-t en-only" style="font-family:'Poppins',sans-serif">⚡ Balance, Polish & Performance</div>
+        <div class="tl-b ar-only" style="font-family:'Tajawal',sans-serif">ضبط صعوبة اللعبة بناءً على اختبار الأطفال · تحسين الأداء (60fps على الأجهزة القديمة) · إصلاح كل الأخطاء · تلميع الـ VFX والأنيميشنز · اختبار نهائي شامل</div>
+        <div class="tl-b en-only">Difficulty tuning based on child testing · Performance optimization (60fps on older devices) · All bug fixes · VFX and animation polish · Final comprehensive testing</div>
+        <span class="tl-chip y ar-only">تسليم: لعبة جاهزة للإطلاق</span><span class="tl-chip y en-only">Deliverable: Launch-ready game</span>
+      </div>
+      <!-- W12 LAUNCH -->
+      <div class="tl-item"><div class="tl-dot y"></div>
+        <div class="tl-ph y ar-only">الأسبوع 12 — الإطلاق 🚀</div><div class="tl-ph y en-only">Week 12 — LAUNCH 🚀</div>
+        <div class="tl-t ar-only" style="font-family:'Cairo',sans-serif">🚀 الإطلاق على المتاجر</div><div class="tl-t en-only" style="font-family:'Poppins',sans-serif">🚀 Store Launch</div>
+        <div class="tl-b ar-only" style="font-family:'Tajawal',sans-serif">بناء iOS + Android · Metadata عربي وإنجليزي كامل · Screenshots وPreview Video · رفع على App Store وGoogle Play · إعلان الإطلاق على قنوات PG Kids</div>
+        <div class="tl-b en-only">iOS + Android build · Full Arabic/English metadata · Screenshots and Preview Video · Upload to App Store and Google Play · Launch announcement on PG Kids channels</div>
+        <span class="tl-chip y ar-only">🎉 لولوة ران متاحة للتحميل!</span><span class="tl-chip y en-only">🎉 Loulwa Run available for download!</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEAM -->
+  <div class="hcard m fi" style="margin-top:2rem">
+    <h3 style="font-family:'Cairo',sans-serif;font-weight:700;margin-bottom:1.2rem;font-size:1.05rem" class="ar-only">👥 الفريق المطلوب</h3>
+    <h3 style="font-family:'Poppins',sans-serif;font-weight:700;margin-bottom:1.2rem;font-size:1.05rem" class="en-only">👥 Required Team</h3>
+    <table class="tbl m">
+      <thead><tr><th class="ar-only">الدور</th><th class="ar-only">المهام الرئيسية</th><th class="ar-only">الأسابيع</th><th class="en-only">Role</th><th class="en-only">Main Tasks</th><th class="en-only">Weeks</th></tr></thead>
+      <tbody>
+        <tr><td>🎮 <span class="ar-only">مطور Unity (رئيسي)</span><span class="en-only">Lead Unity Dev</span></td><td><span class="ar-only">Gameplay · قدرات · UI · Firebase</span><span class="en-only">Gameplay · Powers · UI · Firebase</span></td><td>1–12</td></tr>
+        <tr><td>🎨 <span class="ar-only">فنان ثلاثي الأبعاد</span><span class="en-only">3D Artist</span></td><td><span class="ar-only">لولوة · عوالم · عقبات · مقتنيات</span><span class="en-only">Loulwa · worlds · obstacles · items</span></td><td>1–8</td></tr>
+        <tr><td>✨ <span class="ar-only">فنان VFX</span><span class="en-only">VFX Artist</span></td><td><span class="ar-only">تأثيرات القدرات · جسيمات · انتقالات</span><span class="en-only">Power effects · particles · transitions</span></td><td>4–11</td></tr>
+        <tr><td>🎵 <span class="ar-only">مهندس صوت</span><span class="en-only">Audio Engineer</span></td><td><span class="ar-only">موسيقى العوالم · صوت عربي · SFX</span><span class="en-only">World music · Arabic voice · SFX</span></td><td>7–10</td></tr>
+        <tr><td>🎯 <span class="ar-only">مصمم مراحل + اختبار</span><span class="en-only">Level Designer + QA</span></td><td><span class="ar-only">توزيع العقبات · توازن الصعوبة · اختبار الأطفال</span><span class="en-only">Obstacle distribution · difficulty · child testing</span></td><td>3–12</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     VERSIONS ROADMAP
+══════════════════════════════════════════ -->
+<div class="divider fi"><div class="dline"></div><div class="dbadge db-p ar-only">🗺️ خارطة الإصدارات</div><div class="dbadge db-p en-only">🗺️ Version Roadmap</div><div class="dline"></div></div>
+
+<section id="versions" class="sec fi">
+  <div class="stag p ar-only">✦ خارطة الإصدارات</div><div class="stag p en-only">✦ Version Roadmap</div>
+  <h2 class="sec-title ar-only" style="font-family:'Cairo',sans-serif">من V1 إلى المستقبل</h2>
+  <h2 class="sec-title en-only" style="font-family:'Poppins',sans-serif;font-weight:800">From V1 to the Future</h2>
+  <p class="sec-desc ar-only fi" style="font-family:'Tajawal',sans-serif;margin-bottom:2.5rem">كل إصدار يُبنى على الإصدار السابق — نبدأ بسيطين وممتازين ثم نوسّع بناءً على ردود الأطفال وأولياء الأمور</p>
+  <p class="sec-desc en-only fi" style="margin-bottom:2.5rem">Each version builds on the previous — we start simple and excellent then expand based on children's and parents' feedback</p>
+
+  <!-- V1 -->
+  <div class="ver-box ver-1 fi">
+    <div class="ver-label vl-1">✅ V1.0 — <span class="ar-only">الإصدار الأول · 3 أشهر</span><span class="en-only">First Release · 3 Months</span></div>
+    <h3 style="font-family:'Cairo',sans-serif;font-weight:900;font-size:1.1rem;color:var(--mint);margin-bottom:.75rem" class="ar-only">🆓 مجاني 100% — بدون IAP — بدون إعلانات</h3>
+    <h3 style="font-family:'Poppins',sans-serif;font-weight:800;font-size:1rem;color:var(--mint);margin-bottom:.75rem" class="en-only">🆓 100% Free — No IAP — No Ads</h3>
+    <div class="g3" style="margin-top:1rem">
+      <div><div style="font-size:.82rem;color:var(--text2);line-height:2" class="ar-only" style="font-family:'Tajawal',sans-serif">✦ 4 عوالم كاملة<br>✦ قدرة المغناطيس<br>✦ القدرة العشوائية (4 إمكانيات)</div><div style="font-size:.82rem;color:var(--text2);line-height:2" class="en-only">✦ 4 complete worlds<br>✦ Magnet power<br>✦ Random power (4 options)</div></div>
+      <div><div style="font-size:.82rem;color:var(--text2);line-height:2" class="ar-only" style="font-family:'Tajawal',sans-serif">✦ مقتنيات أطفال لكل عالم<br>✦ 20 إنجاز<br>✦ مهام يومية + Streak</div><div style="font-size:.82rem;color:var(--text2);line-height:2" class="en-only">✦ Kid collectibles per world<br>✦ 20 achievements<br>✦ Daily missions + Streak</div></div>
+      <div><div style="font-size:.82rem;color:var(--text2);line-height:2" class="ar-only" style="font-family:'Tajawal',sans-serif">✦ Leaderboard عائلي<br>✦ صوت عربي لولوة<br>✦ iOS + Android</div><div style="font-size:.82rem;color:var(--text2);line-height:2" class="en-only">✦ Family leaderboard<br>✦ Loulwa Arabic voice<br>✦ iOS + Android</div></div>
+    </div>
+  </div>
+
+  <!-- V2 -->
+  <div class="ver-box ver-2 fi">
+    <div class="ver-label vl-2">🔮 V2.0 — <span class="ar-only">الإصدار الثاني · شهر 4–6</span><span class="en-only">Second Release · Month 4–6</span></div>
+    <h3 style="font-family:'Cairo',sans-serif;font-weight:900;font-size:1.1rem;color:var(--pink2);margin-bottom:.75rem" class="ar-only">💄 أول مشتريات داخلية — أزياء تجميلية فقط</h3>
+    <h3 style="font-family:'Poppins',sans-serif;font-weight:800;font-size:1rem;color:var(--pink2);margin-bottom:.75rem" class="en-only">💄 First In-App Purchases — Cosmetic Outfits Only</h3>
+    <div class="g3" style="margin-top:1rem">
+      <div><div style="font-size:.82rem;color:var(--text2);line-height:2" class="ar-only" style="font-family:'Tajawal',sans-serif">✦ 6+ أزياء لولوة (IAP)<br>✦ PG Kids Pass اشتراك شهري<br>✦ حزم ربطات الشعر</div><div style="font-size:.82rem;color:var(--text2);line-height:2" class="en-only">✦ 6+ Loulwa outfits (IAP)<br>✦ PG Kids Pass subscription<br>✦ Hair Bow packs</div></div>
+      <div><div style="font-size:.82rem;color:var(--text2);line-height:2" class="ar-only" style="font-family:'Tajawal',sans-serif">✦ عالم 5 موسمي (عيد/رمضان)<br>✦ ألبوم المقتنيات<br>✦ محتوى موسمي</div><div style="font-size:.82rem;color:var(--text2);line-height:2" class="en-only">✦ World 5 — seasonal (Eid/Ramadan)<br>✦ Collection album<br>✦ Seasonal content</div></div>
+      <div><div style="font-size:.82rem;color:var(--text2);line-height:2" class="ar-only" style="font-family:'Tajawal',sans-serif">✦ بناءً على تحليل V1<br>✦ تحسينات أداء<br>✦ محتوى جديد بناءً على الملاحظات</div><div style="font-size:.82rem;color:var(--text2);line-height:2" class="en-only">✦ Based on V1 analytics<br>✦ Performance improvements<br>✦ New content from feedback</div></div>
+    </div>
+  </div>
+
+  <!-- V3 -->
+  <div class="ver-box ver-3 fi">
+    <div class="ver-label vl-3">🌟 V3.0 — <span class="ar-only">الإصدار الثالث · شهر 7–10</span><span class="en-only">Third Release · Month 7–10</span></div>
+    <h3 style="font-family:'Cairo',sans-serif;font-weight:900;font-size:1.1rem;color:var(--yellow);margin-bottom:.75rem" class="ar-only">🌍 التوسع والتدويل</h3>
+    <h3 style="font-family:'Poppins',sans-serif;font-weight:800;font-size:1rem;color:var(--yellow);margin-bottom:.75rem" class="en-only">🌍 Expansion & Internationalization</h3>
+    <div class="g3" style="margin-top:1rem">
+      <div><div style="font-size:.82rem;color:var(--text2);line-height:2" class="ar-only" style="font-family:'Tajawal',sans-serif">✦ ترجمة إنجليزي + فرنسي<br>✦ دخول أسواق جديدة<br>✦ شخصيات مساعدة جديدة</div><div style="font-size:.82rem;color:var(--text2);line-height:2" class="en-only">✦ English + French translation<br>✦ Enter new markets<br>✦ New companion characters</div></div>
+      <div><div style="font-size:.82rem;color:var(--text2);line-height:2" class="ar-only" style="font-family:'Tajawal',sans-serif">✦ وضع تعاوني (أهل + أطفال)<br>✦ تحديات أسبوعية<br>✦ محتوى تعليمي خفيف</div><div style="font-size:.82rem;color:var(--text2);line-height:2" class="en-only">✦ Co-op mode (parent + child)<br>✦ Weekly challenges<br>✦ Light educational content</div></div>
+      <div><div style="font-size:.82rem;color:var(--text2);line-height:2" class="ar-only" style="font-family:'Tajawal',sans-serif">✦ ربط بمنصة PG Kids<br>✦ محتوى تفاعلي مع الأغاني<br>✦ توسعة IP الألعاب</div><div style="font-size:.82rem;color:var(--text2);line-height:2" class="en-only">✦ PG Kids platform integration<br>✦ Interactive song content<br>✦ Games IP expansion</div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">لولوة ران · Loulwa Run 3D</div>
+  <p class="ar-only" style="font-family:'Tajawal',sans-serif;margin-bottom:.5rem">وثيقة تصميم اللعبة (GDD) · سري وخاص بـ PG Kids · Progressive Generation Studios · 2025</p>
+  <p class="en-only" style="margin-bottom:.5rem">Game Design Document (GDD) · Confidential — PG Kids · Progressive Generation Studios · 2025</p>
+  <p style="font-size:.74rem;color:var(--text3)">Version 2.0 (Revised) · For presentation and development handoff</p>
+</footer>
+
+<script>
+// STARS
+(function(){
+  const s=document.getElementById('stars');
+  for(let i=0;i<80;i++){
+    const d=document.createElement('div');d.className='star';
+    const z=Math.random()*2+1;
+    d.style.cssText=`width:${z}px;height:${z}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*5}s`;
+    s.appendChild(d);
+  }
+})();
+
+// LANGUAGE
+function setLang(l){
+  document.body.className=`lang-${l}`;
+  document.body.setAttribute('dir',l==='ar'?'rtl':'ltr');
+  document.documentElement.setAttribute('lang',l);
+  document.querySelectorAll('.lang-btn').forEach(b=>{
+    const isActive=(l==='ar'&&b.textContent==='العربية')||(l==='en'&&b.textContent==='English');
+    b.classList.toggle('on',isActive);
+  });
+  // fix timeline for LTR
+  document.querySelectorAll('.tl-wrap').forEach(w=>{
+    if(l==='en'){w.style.paddingRight='0';w.style.paddingLeft='2rem'}
+    else{w.style.paddingRight='2rem';w.style.paddingLeft='0'}
+  });
+  document.querySelectorAll('.tl-item').forEach(it=>{
+    if(l==='en'){it.style.paddingRight='0';it.style.paddingLeft='2rem'}
+    else{it.style.paddingRight='2rem';it.style.paddingLeft='0'}
+  });
+  document.querySelectorAll('.tl-dot').forEach(d=>{
+    if(l==='en'){d.style.right='auto';d.style.left='-1.5rem'}
+    else{d.style.left='auto';d.style.right='-1.5rem'}
+  });
+  document.querySelectorAll('.tl-wrap::before').forEach(()=>{});
+}
+document.body.classList.add('lang-ar');
+
+// FADE
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis')})},{threshold:.08});
+document.querySelectorAll('.fi').forEach(el=>obs.observe(el));
+
+// TOC
+const secs=['hero','overview','mechanics','powers','collectibles','worlds','technical','timeline','versions'];
+const dots=document.querySelectorAll('.toc-d');
+window.addEventListener('scroll',()=>{
+  const mid=window.scrollY+window.innerHeight/2;
+  secs.forEach((id,i)=>{
+    const el=document.getElementById(id);
+    if(el&&mid>=el.offsetTop&&mid<el.offsetTop+el.offsetHeight){
+      dots.forEach(d=>d.classList.remove('on'));
+      if(dots[i])dots[i].classList.add('on');
+    }
+  });
+});
+</script>
+</body>
+</html>
